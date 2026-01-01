@@ -1,10 +1,5 @@
-import type { PageLoad } from "./$types";
-
-export const load: PageLoad = ({ params }) => {
-    return { rustCode };
-}
-
-const rustCode = `use anchor_lang::prelude::*;
+export function load() {
+	const rustCode = `use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 
 declare_id!("PumpFun1111111111111111111111111111111111");
@@ -112,3 +107,8 @@ pub enum CurveType {
     Linear,
     Exponential,
 }`;
+
+	return {
+		rustCode
+	};
+}

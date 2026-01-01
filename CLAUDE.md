@@ -89,12 +89,48 @@ src/
   lib/                  # Shared library code ($lib alias)
     index.ts            # Library exports
     assets/             # Static assets like images, fonts
+    styles/             # Shared CSS files
+      article.css       # Article page styling (fonts, layout, code blocks)
   routes/               # File-based routing
     +layout.svelte      # Root layout
     +page.svelte        # Home page
     layout.css          # Global Tailwind styles
+    articles/           # Blog articles
 static/                 # Static files served at root
 ```
+
+## Article Styling
+
+Blog articles use a shared CSS file at `src/lib/styles/article.css` that provides:
+
+### Typography
+- **Playfair Display** (serif) for headings - elegant article titles
+- **Inter** (sans-serif) for body text - clean and readable
+- **JetBrains Mono** for code blocks - monospace optimized for code
+
+### CSS Classes
+Import the stylesheet in article pages:
+```typescript
+import '$lib/styles/article.css';
+```
+
+Available CSS classes:
+- `.article-container` - Main article wrapper with gradient background
+- `.article-header` - Article header section
+- `.article-title` - Main title (uses Playfair Display)
+- `.article-section-title` - Section headings
+- `.article-text` - Body paragraphs
+- `.code-container`, `.code-header`, `.code-block` - Code block styling
+- `.feature-grid` - Grid layout for feature sections
+- `.info-box` - Information/note boxes
+- `.highlighted-section` - Highlighted content sections
+
+### Creating New Articles
+1. Create a new directory under `src/routes/articles/`
+2. Add `+page.svelte` for the article content
+3. Optionally add `+page.server.ts` for data loading (e.g., code examples)
+4. Import `$lib/styles/article.css` for consistent styling
+5. Use the CSS classes from the shared stylesheet
 
 ## Development Notes
 

@@ -1,0 +1,233 @@
+/* Article Typography and Styling */
+
+/* Import Google Fonts for articles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* Article Container */
+.article-container {
+	min-height: 100vh;
+	background: linear-gradient(to bottom right, rgb(248, 250, 252), rgb(226, 232, 240));
+	padding: 4rem 1.5rem;
+	font-family: 'Inter', sans-serif;
+}
+
+/* Article Header */
+.article-header {
+	margin-bottom: 3rem;
+}
+
+.article-meta {
+	margin-bottom: 1rem;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	font-size: 0.875rem;
+	color: rgb(71, 85, 105);
+}
+
+.article-category {
+	border-radius: 9999px;
+	padding: 0.25rem 0.75rem;
+	font-weight: 500;
+	background-color: rgb(243, 232, 255);
+	color: rgb(126, 34, 206);
+}
+
+.article-title {
+	font-family: 'Playfair Display', serif;
+	font-size: 3rem;
+	font-weight: 700;
+	line-height: 1.2;
+	color: rgb(15, 23, 42);
+	margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+	.article-title {
+		font-size: 3.75rem;
+	}
+}
+
+.article-subtitle {
+	font-family: 'Inter', sans-serif;
+	font-size: 1.25rem;
+	line-height: 1.75;
+	color: rgb(51, 65, 85);
+}
+
+/* Article Content */
+.article-content {
+	max-width: none;
+	font-family: 'Inter', sans-serif;
+}
+
+.article-section {
+	margin-bottom: 3rem;
+}
+
+.article-section-title {
+	font-family: 'Playfair Display', serif;
+	font-size: 1.875rem;
+	font-weight: 700;
+	color: rgb(15, 23, 42);
+	margin-bottom: 1rem;
+}
+
+.article-text {
+	margin-bottom: 1rem;
+	line-height: 1.75;
+	color: rgb(51, 65, 85);
+}
+
+/* Code Blocks */
+.code-container {
+	overflow: hidden;
+	border-radius: 0.75rem;
+	background-color: rgb(15, 23, 42);
+	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.code-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	border-bottom: 1px solid rgb(51, 65, 85);
+	background-color: rgb(30, 41, 59);
+	padding: 0.75rem 1.5rem;
+}
+
+.code-filename {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.875rem;
+	color: rgb(203, 213, 225);
+}
+
+.code-language {
+	font-size: 0.75rem;
+	color: rgb(148, 163, 184);
+}
+
+.code-block {
+	overflow-x: auto;
+	padding: 1.5rem;
+	font-family: 'JetBrains Mono', monospace;
+}
+
+/* Info Box */
+.info-box {
+	margin-top: 1rem;
+	border-radius: 0.5rem;
+	background-color: rgb(239, 246, 255);
+	padding: 1rem;
+}
+
+.info-box-text {
+	font-size: 0.875rem;
+	line-height: 1.75;
+	color: rgb(30, 58, 138);
+}
+
+/* Feature Grid */
+.feature-grid {
+	margin-bottom: 3rem;
+	border-radius: 0.75rem;
+	background-color: white;
+	padding: 2rem;
+	box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.feature-grid-items {
+	display: grid;
+	gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+	.feature-grid-items {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+.feature-item {
+	border-radius: 0.5rem;
+	border: 1px solid rgb(226, 232, 240);
+	padding: 1.5rem;
+}
+
+.feature-item-title {
+	margin-bottom: 0.5rem;
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: rgb(15, 23, 42);
+}
+
+.feature-item-text {
+	color: rgb(71, 85, 105);
+}
+
+/* Highlighted Section */
+.highlighted-section {
+	border-radius: 0.75rem;
+	background: linear-gradient(to right, rgb(250, 245, 255), rgb(252, 231, 243));
+	padding: 2rem;
+}
+
+/* Article Footer */
+.article-footer {
+	margin-top: 4rem;
+	border-top: 1px solid rgb(226, 232, 240);
+	padding-top: 2rem;
+}
+
+.article-footer-content {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.article-back-link {
+	font-family: 'Inter', sans-serif;
+	color: rgb(71, 85, 105);
+	transition: color 0.2s;
+}
+
+.article-back-link:hover {
+	color: rgb(15, 23, 42);
+}
+
+.article-share {
+	display: flex;
+	gap: 1rem;
+}
+
+.article-share-label {
+	font-size: 0.875rem;
+	color: rgb(100, 116, 139);
+}
+
+.article-share-button {
+	color: rgb(71, 85, 105);
+	transition: color 0.2s;
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-family: 'Inter', sans-serif;
+}
+
+.article-share-button:hover {
+	color: rgb(37, 99, 235);
+}
+
+/* Lists */
+.article-list {
+	margin-bottom: 1rem;
+	padding-left: 1.5rem;
+	color: rgb(51, 65, 85);
+}
+
+.article-list li {
+	margin-bottom: 0.5rem;
+}
+
+.article-list.decimal {
+	list-style-type: decimal;
+}
