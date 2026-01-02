@@ -89,7 +89,7 @@
 				<h2 class="article-section-title">Introduction</h2>
 				<div>
 					<p class="article-text">
-						<strong>Pump.fun</strong>, the largest meme coin launchpad on Solana, offers a powerful feature:
+						<strong><a href="https://pump.fun/" target="_blank">Pump.fun</a></strong>, the largest meme coin launchpad on Solana, offers a powerful feature:
 						when a token reaches a certain price threshold, it can be paired with SOL to create a Raydium pool.
 						The process involves three simple steps:
 					</p>
@@ -179,16 +179,16 @@
                             program. It contains information related to that program.
                         </li>
                         <li>
-                            <InlinedCode variable="System account" color="purple" strong />: An account whose <InlinedCode variable="owner" color="blue" /> is the <InlinedCode variable="System Program" color="blue" />. This
+                            <InlinedCode variable="System account" color="purple" strong />: An account whose <InlinedCode variable="owner" color="blue" /> is the <InlinedCode variable="System Program" color="blue" strong />. This
                             type of account can pay transaction fees or rent-fee.
                         </li>
                         <li>
-                            <InlinedCode variable="Sysvar account" color="purple" strong />: An account whose <InlinedCode variable="owner" color="blue" /> is the <InlinedCode variable="Sysvar Program" color="blue" />. These
+                            <InlinedCode variable="Sysvar account" color="purple" strong />: An account whose <InlinedCode variable="owner" color="blue" /> is the <InlinedCode variable="Sysvar Program" color="blue" strong />. These
                             are predefined addresses that provide access to cluster state data.
                         </li>
                         <li>
                             <InlinedCode variable="Other" color="purple" strong />: An account whose <InlinedCode variable="owner" color="blue" /> is built-in programs other than <InlinedCode color="blue" variable="System
-                            program" /> or <InlinedCode variable="Sysvar program" color="blue" />. We just mention it here for completeness, it's not relate to our topic.
+                            program" strong /> or <InlinedCode variable="Sysvar program" color="blue" strong />. We just mention it here for completeness, it's not relate to our topic.
                         </li>
                     </ul>
                 </div>
@@ -305,8 +305,8 @@
 				</p>
 
 				<p class="article-text">
-                    This article assumes you're familiar with <InlinedCode variable="Anchor" color="blue" /> and how to build programs on Solana using <InlinedCode variable="Anchor" color="blue" />.
-                    Let's prepare the prerequisites and initialize an <InlinedCode variable="Anchor" color="blue" /> program.
+                    This article assumes you're familiar with <b><a href="https://www.anchor-lang.com/docs" target="_blank">Anchor</a></b> and how to build programs on Solana using Anchor.
+                    Let's prepare the prerequisites and initialize an Anchor program.
 				</p>
 
                 <div class="code-container">
@@ -328,7 +328,7 @@
 
                 <div>
 				<p class="article-text">
-                    In our <InlinedCode variable="FPump (Forked Pump)" color="blue" /> program, we use simplified logic supporting two instructions:
+                    In our <InlinedCode variable="FPump (Forked Pump)" color="blue" strong/> program, we use simplified logic supporting two instructions:
 				</p>
                 <ul class="article-list list-disc">
                     <li>
@@ -350,10 +350,10 @@
                 </p>
                 <p class="article-text">
                     Raydium requires wrapped SOL (wSOL) instead of native SOL when creating a liquidity pool.
-                    Therefore, in our <InlinedCode variable="FPump" color="blue" /> program, we receive native SOL and convert it to wSOL using the <InlinedCode variable="sync_native" color="blue" /> instruction.
+                    Therefore, in our <InlinedCode variable="FPump" color="blue" strong/> program, we receive native SOL and convert it to wSOL using the <InlinedCode variable="sync_native" color="blue" strong /> instruction.
                 </p>
                 <p class="article-text">
-                    Please check the branch <b><code><a href="https://github.com/anhoangphuc/pumpfun-migrate-raydium/tree/feat/mint-token">mint-token</a></code></b> for more details.
+                    Please check the branch <b><code><a href="https://github.com/anhoangphuc/pumpfun-migrate-raydium/tree/feat/mint-token" target="_blank">mint-token</a></code></b> for more details.
                 </p>
 
 
@@ -379,12 +379,12 @@
 
                 <p class="article-text">
                     So far so good. Now let's create a Raydium pool. There are several Raydium programs available for creating pools,
-                    each corresponding to specific pool logic. In this article, we use the latest version of <InlinedCode variable="CPMM" color="blue" />, which is optimized
+                    each corresponding to specific pool logic. In this article, we use the latest version of <InlinedCode variable="CPMM" color="blue" strong />, which is optimized
                     for pools that pair SOL with a token.
                 </p>
 
                 <p class="article-text">
-                    First, you need to install CPMM SDK. Add this dependency to your <InlinedCode variable="Cargo.toml" color="blue" />, then rebuild your program.
+                    First, you need to install CPMM SDK. Add this dependency to your <InlinedCode variable="Cargo.toml" color="blue" strong />, then rebuild your program.
                 </p>
 
                 <div class="code-container">
@@ -405,8 +405,8 @@
                 <br />
 
                 <div class="article-text">
-                    Then, create a <InlinedCode variable="migrate" color="blue" /> instruction in <InlinedCode variable="FPump" color="blue" /> that calls the <InlinedCode variable="initialize" color="blue" /> instruction to create a new pool in the <InlinedCode variable="CPMM" color="blue" /> program.
-                    Please check the branch <b><code><a href="https://github.com/anhoangphuc/pumpfun-migrate-raydium/tree/feat/migrate">migrate</a></code></b> for more details
+                    Then, create a <InlinedCode variable="migrate" color="blue" strong /> instruction in <InlinedCode variable="FPump" color="blue" strong /> that calls the <InlinedCode variable="initialize" color="blue" strong /> instruction to create a new pool in the <InlinedCode variable="CPMM" color="blue" strong /> program.
+                    Please check the branch <b><code><a href="https://github.com/anhoangphuc/pumpfun-migrate-raydium/tree/feat/migrate" target="_blank">migrate</a></code></b> for more details
                 </div>
 
 				<CodeBlock
@@ -446,7 +446,7 @@
                     The error message is clear: Account <code class="rounded bg-red-100 px-2 py-1 text-sm text-red-700">vault</code> is not <code class="rounded bg-red-100 px-2 py-1 text-sm text-red-700">AccountNotSystemOwned</code>.
                 </p>
 
-                <p class="article-text">The <InlinedCode variable="migrate" color="blue" /> instruction requires <InlinedCode variable="vault" color="blue" /> to be owned by the <InlinedCode variable="SystemProgram" color="blue" />.</p>
+                <p class="article-text">The <InlinedCode variable="migrate" color="blue" strong/> instruction requires <InlinedCode variable="vault" color="blue" /> to be owned by the <InlinedCode variable="SystemProgram" color="blue" strong />.</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span class="code-filename">initialize.rs</span>
@@ -470,13 +470,13 @@
                     and this <InlinedCode variable="creator" color="blue" /> is responsible for paying the creation fee for the <InlinedCode variable="lp_token" color="blue" />. Only a <InlinedCode variable="SystemAccount" color="blue" /> can pay that fee.
                 </p>
                 <p class="article-text">
-                    However, <InlinedCode variable="vault" color="blue" /> is a <InlinedCode variable="Program State Account" color="blue" /> managed by the <InlinedCode variable="FPump" color="blue" /> program because we have already initialized it.
-                    To fix this, we simply skip the <InlinedCode variable="init" color="blue" /> step. By default, all uninitialized accounts are owned by the <InlinedCode variable="SystemProgram" color="blue" />.
+                    However, <InlinedCode variable="vault" color="blue" /> is a Program State Account managed by the <InlinedCode variable="FPump" color="blue" strong /> program because we have already initialized it.
+                    To fix this, we simply skip the <InlinedCode variable="init" color="blue" /> step. By default, all uninitialized accounts are owned by the <InlinedCode variable="SystemProgram" color="blue" strong />.
                     With this change, everything works perfectly. You can check the <b><code>master</code></b> branch for the final code.
                 </p>
 
                 <p class="article-text">
-                    Please check the branch <b><code><a href="https://github.com/anhoangphuc/pumpfun-migrate-raydium">main</a></code></b> for more details
+                    Please check the branch <b><code><a href="https://github.com/anhoangphuc/pumpfun-migrate-raydium" target="_blank">main</a></code></b> for more details
                 </p>
 
                 <div class="code-container">
