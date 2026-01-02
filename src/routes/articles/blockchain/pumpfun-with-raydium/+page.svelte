@@ -10,6 +10,7 @@
 	import '$lib/styles/article.css';
 	import CodeBlock from '$lib/components/CodeBlock.svelte';
 	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
+    import InlinedCode from '$lib/components/InlinedCode.svelte';
 
 	const { data }: { data: PageData } = $props();
 	const prerequisitesCode = $derived(data.prerequisitesCode);
@@ -44,9 +45,9 @@
 			<div class="article-meta">
 				<span class="article-category">Blockchain</span>
 				<span>•</span>
-				<time datetime="2026-01-01">January 1, 2026</time>
+				<time datetime="2026-01-01">January 2, 2026</time>
 				<span>•</span>
-				<span>5 min read</span>
+				<span>15 min read</span>
 			</div>
 			<h1 class="article-title">How does Pump.fun create a liquidity pool on Raydium?</h1>
 			<p class="article-subtitle">
@@ -137,18 +138,29 @@
 					<pre class="code-block"><code class="rust">{accountDetailCode}</code></pre>
 				</div>
 
+				<div class="info-box">
+					<p class="info-box-text">
+						<strong>Explanation:</strong> This struct defines the basic structure of a Solana account.
+						The <code>lamports</code> field stores the account's balance, <code>data</code> holds the account's state,
+						<code>owner</code> specifies which program controls the account, <code>executable</code> indicates if it contains executable code,
+						and <code>rent_epoch</code> tracks when rent is due.
+					</p>
+				</div>
+
+                <br />
+
                 <div>
                     <p class="article-text">
-                        Based on the <code>executable</code> field, we can divide Solana accounts into two categories:
+                        Based on the <InlinedCode variable="executable" color="blue" /> field, we can divide Solana accounts into two categories:
                     </p>
 
                     <ul class="article-list list-disc">
                         <li>
-                            <strong>Program account:</strong> An account with <code>executable = true</code>. This account
+                            <InlinedCode variable="Program account" color="purple" strong />: An account with <InlinedCode variable="executable = true" color="blue" />. This account
                             contains executable code. Deployed smart contracts use this type.
                         </li>
                         <li>
-                            <strong>Data account:</strong> An account with <code>executable = false</code>. This account
+                            <InlinedCode variable="Data account" color="purple" strong />: An account with <InlinedCode variable="executable = false" color="blue" />. This account
                             doesn't contain executable code and is used to store data for a program.
                         </li>
                     </ul>
@@ -156,27 +168,27 @@
 
                 <div>
                     <p class="article-text">
-                        The <code>owner</code> is the program that owns the account. Only that program can
-                        modify the account's state. Based on the <code>owner</code> address, we can divide
+                        The <InlinedCode variable="owner" color="blue" /> is the program that owns the account. Only owner program can
+                        modify the account's state. Based on the <InlinedCode variable="owner" color="blue" /> address, we can divide
                         Solana accounts into four categories:
                     </p>
 
                     <ul class="article-list list-disc">
                         <li>
-                            <strong>Program state account:</strong> An account whose <code>owner</code> is a user-deployed
+                            <InlinedCode variable="Program state account" color="purple" strong />: An account whose <InlinedCode variable="owner" color="blue" /> is a user-deployed
                             program. It contains information related to that program.
                         </li>
                         <li>
-                            <strong>System account:</strong> An account whose <code>owner</code> is the <code>System Program</code>. This
-                            type of account can pay transaction fees.
+                            <InlinedCode variable="System account" color="purple" strong />: An account whose <InlinedCode variable="owner" color="blue" /> is the <InlinedCode variable="System Program" color="blue" />. This
+                            type of account can pay transaction fees or rent-fee.
                         </li>
                         <li>
-                            <strong>Sysvar account:</strong> An account whose <code>owner</code> is the <code>Sysvar Program</code>. These
+                            <InlinedCode variable="Sysvar account" color="purple" strong />: An account whose <InlinedCode variable="owner" color="blue" /> is the <InlinedCode variable="Sysvar Program" color="blue" />. These
                             are predefined addresses that provide access to cluster state data.
                         </li>
                         <li>
-                            <strong>Other:</strong> An account whose <code>owner</code> is built-in programs other than <code>System
-                            program</code> or <code>Sysvar program</code>.
+                            <InlinedCode variable="Other" color="purple" strong />: An account whose <InlinedCode variable="owner" color="blue" /> is built-in programs other than <InlinedCode color="blue" variable="System
+                            program" /> or <InlinedCode variable="Sysvar program" color="blue" />. We just mention it here for completeness, it's not relate to our topic.
                         </li>
                     </ul>
                 </div>
@@ -190,14 +202,14 @@
 
                     <ul class="article-list list-disc">
                         <li>
-                            <strong>Public key address:</strong> The account address is a public key from an
+                            <InlinedCode variable="Public key address" color="purple" strong />: The account address is a public key from an
                             Ed25519 keypair. Whoever holds the corresponding private key can sign
                             for this account.
                         </li>
                         <li>
-                            <strong>Program derived address (PDA):</strong> The account address is derived
-                            deterministically using a <code>program's address</code> and one or more optional
-                            seeds. This account has no private key. The Solana runtime allows the
+                            <InlinedCode variable="Program derived address (PDA)" color="purple" strong />: The account address is derived
+                            deterministically using a <InlinedCode variable="program's address" color="blue" /> and one or more optional
+                            <InlinedCode variable="seeds" color="blue" />. This account has no private key. The Solana runtime allows the
                             program from which the PDA is derived to sign on its behalf.
                         </li>
                     </ul>
@@ -273,16 +285,15 @@
 								</tr>
 							</tbody>
 						</table>
+                        <br />
+                        <div class="info-box">
+                            <p class="info-box-text">
+                                This table summarizes the different ways to classify Solana accounts based on their characteristics.
+                            </p>
+                        </div>
 					</div>
-                </div>
+				</div>
 
-
-				<!-- <div class="info-box">
-					<p class="info-box-text">
-						<strong>Note:</strong> This is a simplified educational example. The actual Pump.fun program
-						includes additional security checks, fee calculations, and more sophisticated curve mathematics.
-					</p>
-				</div> -->
 			</section>
 
 			<!-- Integration with Raydium -->
@@ -290,12 +301,12 @@
 				<h2 class="article-section-title">Create an FPump program</h2>
 				<p class="article-text">
                     Now let's address the main purpose of this article: creating a Solana program that can migrate assets and create a Raydium pool.
-                    This section includes code examples, iterative updates, and references to a GitHub repository demonstrating the final implementation.
+                    This section includes code examples, iterative updates, and references to a <b><a href="https://github.com/anhoangphuc/pumpfun-migrate-raydium" target="_blank">GitHub repository </a></b> demonstrating the final implementation.
 				</p>
 
 				<p class="article-text">
-                    This article assumes you're familiar with Anchor and how to build programs on Solana using Anchor.
-                    Let's prepare the prerequisites and initialize an Anchor program.
+                    This article assumes you're familiar with <InlinedCode variable="Anchor" color="blue" /> and how to build programs on Solana using <InlinedCode variable="Anchor" color="blue" />.
+                    Let's prepare the prerequisites and initialize an <InlinedCode variable="Anchor" color="blue" /> program.
 				</p>
 
                 <div class="code-container">
@@ -306,17 +317,26 @@
 					<pre class="code-block"><code class="bash">{prerequisitesCode}</code></pre>
 				</div>
 
+				<div class="info-box">
+					<p class="info-box-text">
+						<strong>Explanation:</strong> This command initializes a new Anchor project named "pumpfun-integrate-raydium".
+						Make sure you have the required versions installed: Anchor v0.31.1, Node v0.22.15, Rust ≥ 1.79.0, and Solana 2.3.0.
+					</p>
+				</div>
+
+                <br />
+
                 <div>
 				<p class="article-text">
-                    In our <code>FPump</code> program, we use simplified logic supporting two instructions:
+                    In our <InlinedCode variable="FPump (Forked Pump)" color="blue" /> program, we use simplified logic supporting two instructions:
 				</p>
                 <ul class="article-list list-disc">
                     <li>
-                        <strong>create_token</strong>: Creates a new mint, mints 1,000,000 tokens, and transfers 10 SOL into the vault.
+                        <InlinedCode variable="create_token" color="purple" strong />: Creates a new mint, mints 1,000,000 tokens, and transfers 10 SOL into the vault.
                         These assets are used to create a Raydium pool instead of waiting for users to swap.
                     </li>
                     <li>
-                        <strong>migrate</strong>: Creates a Raydium pool with 1,000,000 tokens and 10 SOL.
+                        <InlinedCode variable="migrate" color="purple" strong />: Creates a Raydium pool with 1,000,000 tokens and 9 SOL. The remaining 1 SOL is used to pay the creation fee.
                     </li>
                 </ul>
                 </div>
@@ -325,15 +345,15 @@
             <section class="article-section">
 				<h2 class="article-section-title">Create a new token</h2>
                 <p class="article-text">
-                    We create a new mint token with 6 decimals, initialize a Vault PDA that stores 1,000,000 of the newly created tokens,
-                    and transfer 10 SOL into the vault. Check the <code>mint-token</code> branch for more details.
+                    We create a new mint token with 6 decimals, initialize a <InlinedCode variable="Vault PDA" color="blue" /> that stores 1,000,000 of the newly created tokens,
+                    and transfer 10 SOL into the vault.
                 </p>
                 <p class="article-text">
                     Raydium requires wrapped SOL (wSOL) instead of native SOL when creating a liquidity pool.
-                    Therefore, in our <code>FPump</code> program, we receive native SOL and convert it to wSOL using the <code>sync_native</code> instruction.
+                    Therefore, in our <InlinedCode variable="FPump" color="blue" /> program, we receive native SOL and convert it to wSOL using the <InlinedCode variable="sync_native" color="blue" /> instruction.
                 </p>
                 <p class="article-text">
-                    Please check the branch <b><code><a href="https://github.com/anhoangphuc/pumpfun-migrate-raydium/tree/feat/mint-token">mint-token</a></code></b> for more details
+                    Please check the branch <b><code><a href="https://github.com/anhoangphuc/pumpfun-migrate-raydium/tree/feat/mint-token">mint-token</a></code></b> for more details.
                 </p>
 
 
@@ -344,6 +364,14 @@
 					maxLines={20}
 				/>
 
+				<div class="info-box">
+					<p class="info-box-text">
+						<strong>Explanation:</strong> This code creates a new token mint and initializes a vault to store liquidity.
+						The handler mints 1,000,000 tokens to the vault, transfers 10 SOL (converted to wSOL), and stores both
+						assets in preparation for creating a Raydium pool. The vault uses a PDA (Program Derived Address) for secure asset management.
+					</p>
+				</div>
+
             </section>
 
             <section class="article-section">
@@ -351,12 +379,12 @@
 
                 <p class="article-text">
                     So far so good. Now let's create a Raydium pool. There are several Raydium programs available for creating pools,
-                    each corresponding to specific pool logic. In this article, we use the latest version of CPMM, which is optimized
+                    each corresponding to specific pool logic. In this article, we use the latest version of <InlinedCode variable="CPMM" color="blue" />, which is optimized
                     for pools that pair SOL with a token.
                 </p>
 
                 <p class="article-text">
-                    First, you need to install CPMM. Add this dependency to your <code>Cargo.toml</code>, then rebuild your program.
+                    First, you need to install CPMM SDK. Add this dependency to your <InlinedCode variable="Cargo.toml" color="blue" />, then rebuild your program.
                 </p>
 
                 <div class="code-container">
@@ -367,8 +395,17 @@
                     <pre class="code-block"><code class="ini">{addCPMMCargoCode}</code></pre>
                 </div>
 
+				<div class="info-box">
+					<p class="info-box-text">
+						<strong>Explanation:</strong> This dependency adds the Raydium CPMM (Constant Product Market Maker) swap program to your project.
+						The "no-entrypoint" and "cpi" features enable Cross-Program Invocation (CPI) from your program to Raydium's pool creation logic.
+					</p>
+				</div>
+
+                <br />
+
                 <div class="article-text">
-                    Now, let's create a <code>migrate</code> instruction in <code>FPump</code> that calls the <code>initialize</code> instruction to create a new pool in the CPMM program.
+                    Then, create a <InlinedCode variable="migrate" color="blue" /> instruction in <InlinedCode variable="FPump" color="blue" /> that calls the <InlinedCode variable="initialize" color="blue" /> instruction to create a new pool in the <InlinedCode variable="CPMM" color="blue" /> program.
                     Please check the branch <b><code><a href="https://github.com/anhoangphuc/pumpfun-migrate-raydium/tree/feat/migrate">migrate</a></code></b> for more details
                 </div>
 
@@ -378,30 +415,38 @@
 					filename="migrate.rs"
 					maxLines={25}
 				/>
+
+				<div class="info-box">
+					<p class="info-box-text">
+						<strong>Explanation:</strong> This migrate instruction performs a Cross-Program Invocation (CPI) to Raydium's CPMM program
+						to create a new liquidity pool. It sets up all required accounts, calculates token amounts based on which token is SOL,
+						and invokes the initialize function to atomically create the pool with the stored assets from the vault.
+					</p>
+				</div>
+
+                 <br />
+
+                <p class="article-text">
+                    Everything appears ready. However, when we execute the migration instruction, we encounter below error.
+                    <b>What went wrong?</b>
+                </p>
+                <ErrorDisplay
+                    title="AnchorError"
+                    account="vault"
+                    errorCode="AccountNotSystemOwned"
+                    errorNumber={3011}
+                    message="The given account is not owned by the system program."
+                />
+
             </section>
-
-            <p class="article-text">
-                Everything appears ready. However, when we execute the migration instruction, we encounter an error:
-            </p>
-
-            <ErrorDisplay
-                title="AnchorError"
-                account="vault"
-                errorCode="AccountNotSystemOwned"
-                errorNumber={3011}
-                message="The given account is not owned by the system program."
-            />
-
-            <p class="article-text"><strong>What went wrong?</strong></p>
-
 
             <section class="article-section">
                 <h2 class="article-section-title">Let's correct the error</h2>
                 <p class="article-text">
-                    The error message is clear: <code>account: vault. Error Code: AccountNotSystemOwned.</code>
+                    The error message is clear: Account <code class="rounded bg-red-100 px-2 py-1 text-sm text-red-700">vault</code> is not <code class="rounded bg-red-100 px-2 py-1 text-sm text-red-700">AccountNotSystemOwned</code>.
                 </p>
 
-                <p class="article-text">The <code>migrate</code> instruction requires <code>vault</code> to be owned by the SystemProgram.</p>
+                <p class="article-text">The <InlinedCode variable="migrate" color="blue" /> instruction requires <InlinedCode variable="vault" color="blue" /> to be owned by the <InlinedCode variable="SystemProgram" color="blue" />.</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span class="code-filename">initialize.rs</span>
@@ -410,14 +455,24 @@
                     <pre class="code-block"><code class="rust">{shortenInitializeCode}</code></pre>
                 </div>
 
+				<div class="info-box">
+					<p class="info-box-text">
+						<strong>Explanation:</strong> This snippet from Raydium's initialize instruction shows that the <code>creator</code>
+						account (which is our vault) must be a Signer that pays for initializing the LP mint. Only SystemAccounts can pay
+						initialization fees, but our vault was already initialized as a Program State Account.
+					</p>
+				</div>
+
+                <br />
+
                 <p class="article-text">
-                    Why? <code>vault</code> is declared as <code>creator</code> in the <code>initialize</code> instruction,
-                    and this <code>creator</code> is responsible for paying the creation fee for the <code>lp_token</code>. Only a <code>SystemAccount</code> can pay that fee.
+                    Why? <InlinedCode variable="vault" color="blue" /> is declared as <InlinedCode variable="creator" color="blue" /> in the <InlinedCode variable="initialize" color="blue" /> instruction,
+                    and this <InlinedCode variable="creator" color="blue" /> is responsible for paying the creation fee for the <InlinedCode variable="lp_token" color="blue" />. Only a <InlinedCode variable="SystemAccount" color="blue" /> can pay that fee.
                 </p>
                 <p class="article-text">
-                    However, <code>vault</code> is not a SystemAccount. Instead, it's a <strong>Program State Account</strong> managed by the <code>FPump</code> program because we already initialized it.
-                    To fix this, we simply skip the <code>init</code> step. By default, all uninitialized accounts are owned by the SystemProgram.
-                    With this change, everything works perfectly. You can check the <code>master</code> branch for the final code.
+                    However, <InlinedCode variable="vault" color="blue" /> is a <InlinedCode variable="Program State Account" color="blue" /> managed by the <InlinedCode variable="FPump" color="blue" /> program because we have already initialized it.
+                    To fix this, we simply skip the <InlinedCode variable="init" color="blue" /> step. By default, all uninitialized accounts are owned by the <InlinedCode variable="SystemProgram" color="blue" />.
+                    With this change, everything works perfectly. You can check the <b><code>master</code></b> branch for the final code.
                 </p>
 
                 <p class="article-text">
@@ -431,6 +486,14 @@
                     </div>
                     <pre class="code-block"><code class="rust">{fixErrorCode}</code></pre>
                 </div>
+
+				<div class="info-box">
+					<p class="info-box-text">
+						<strong>Explanation:</strong> The fix is simple: change the vault account type from <code>Account&lt;'info, Vault&gt;</code>
+						to <code>SystemAccount&lt;'info&gt;</code> and remove the <code>init</code> constraint. This keeps the vault as a
+						SystemAccount (owned by the System Program), allowing it to pay fees while still functioning as a PDA for signing operations.
+					</p>
+				</div>
             </section>
 
 			<!-- Conclusion -->
