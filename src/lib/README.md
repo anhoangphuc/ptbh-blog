@@ -40,6 +40,38 @@ Reusable code block component with collapsible functionality for long code snipp
 - Gradient fade effect when collapsed
 - Beautiful expand button with hover effects
 
+### ErrorDisplay.svelte
+Reusable error display component for showing formatted error messages.
+
+**Props:**
+- `title` (string, optional): Error title. Default: "Error"
+- `account` (string, optional): Account name related to the error
+- `errorCode` (string, optional): Error code identifier
+- `errorNumber` (string | number, optional): Numeric error code
+- `message` (string, required): Error message description
+
+**Usage:**
+```svelte
+<script>
+  import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
+</script>
+
+<ErrorDisplay
+  title="AnchorError"
+  account="vault"
+  errorCode="AccountNotSystemOwned"
+  errorNumber={3011}
+  message="The given account is not owned by the system program."
+/>
+```
+
+**Features:**
+- Clean, professional error display with red color scheme
+- Error icon (❌) for visual emphasis
+- Structured layout for error details
+- Optional fields - only show what's provided
+- Consistent styling with article theme
+
 ## Styles
 
 ### article.css

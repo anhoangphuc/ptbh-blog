@@ -9,6 +9,7 @@
 
 	import '$lib/styles/article.css';
 	import CodeBlock from '$lib/components/CodeBlock.svelte';
+	import ErrorDisplay from '$lib/components/ErrorDisplay.svelte';
 
 	const { data }: { data: PageData } = $props();
 	const prerequisitesCode = $derived(data.prerequisitesCode);
@@ -331,6 +332,9 @@
                     Raydium requires wrapped SOL (wSOL) instead of native SOL when creating a liquidity pool.
                     Therefore, in our <code>FPump</code> program, we receive native SOL and convert it to wSOL using the <code>sync_native</code> instruction.
                 </p>
+                <p class="article-text">
+                    Please check the branch <b><code><a href="https://github.com/anhoangphuc/pumpfun-migrate-raydium/tree/feat/mint-token">mint-token</a></code></b> for more details
+                </p>
 
 
 				<CodeBlock
@@ -365,6 +369,7 @@
 
                 <div class="article-text">
                     Now, let's create a <code>migrate</code> instruction in <code>FPump</code> that calls the <code>initialize</code> instruction to create a new pool in the CPMM program.
+                    Please check the branch <b><code><a href="https://github.com/anhoangphuc/pumpfun-migrate-raydium/tree/feat/migrate">migrate</a></code></b> for more details
                 </div>
 
 				<CodeBlock
@@ -378,9 +383,15 @@
             <p class="article-text">
                 Everything appears ready. However, when we execute the migration instruction, we encounter an error:
             </p>
-            <pre class="code-block">
-                <code class="bash">Error: AnchorError caused by account: vault. Error Code: AccountNotSystemOwned. Error Number: 3011. Error Message: The given account is not owned by the system program.</code>
-            </pre>
+
+            <ErrorDisplay
+                title="AnchorError"
+                account="vault"
+                errorCode="AccountNotSystemOwned"
+                errorNumber={3011}
+                message="The given account is not owned by the system program."
+            />
+
             <p class="article-text"><strong>What went wrong?</strong></p>
 
 
@@ -409,6 +420,9 @@
                     With this change, everything works perfectly. You can check the <code>master</code> branch for the final code.
                 </p>
 
+                <p class="article-text">
+                    Please check the branch <b><code><a href="https://github.com/anhoangphuc/pumpfun-migrate-raydium">main</a></code></b> for more details
+                </p>
 
                 <div class="code-container">
                     <div class="code-header">
@@ -419,24 +433,19 @@
                 </div>
             </section>
 
-
-
-
-
-
-
-
 			<!-- Conclusion -->
 			<section class="highlighted-section">
 				<h2 class="article-section-title">Conclusion</h2>
 				<p class="article-text">
-					Pump.fun represents a significant innovation in token launches, combining fairness,
-					accessibility, and automation. By integrating with Raydium, it creates a complete
-					lifecycle from initial token creation to mature DEX trading.
+					Successfully migrating assets from a Pump.fun-style program to Raydium requires understanding two critical concepts:
+                    Solana's account ownership model and proper instruction construction.
+                    The key insight is recognizing that only SystemAccounts can pay transaction fees and rent fees—a requirement
+                    that necessitates careful account initialization.
 				</p>
 				<p class="article-text">
-					For developers and traders alike, understanding these mechanisms is crucial for
-					navigating the Solana DeFi ecosystem and building the next generation of tokenized projects.
+					By storing assets by a SystemAccount-owned PDA account and invoking Raydium's CPMM initialize instruction via CPI,
+                    we achieve atomic liquidity migration. This pattern enables automated market making without manual intervention,
+                    creating a seamless transition from bonding curve trading to full DEX liquidity.
 				</p>
 			</section>
 		</div>
