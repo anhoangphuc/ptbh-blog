@@ -8,6 +8,7 @@
 	import 'highlight.js/styles/github-dark.css';
 
 	import '$lib/styles/article.css';
+	import CodeBlock from '$lib/components/CodeBlock.svelte';
 
 	const { data }: { data: PageData } = $props();
 	const prerequisitesCode = $derived(data.prerequisitesCode);
@@ -46,10 +47,10 @@
 				<span>•</span>
 				<span>5 min read</span>
 			</div>
-			<h1 class="article-title">How does Pump.fun create a liquidity pool on Raydium ?</h1>
+			<h1 class="article-title">How does Pump.fun create a liquidity pool on Raydium?</h1>
 			<p class="article-subtitle">
-                A coding tour to explain how Pump.fun creates a liquidity pool on Raydium in an atomic and automatically way.
-                This is a simplified example to explain how and why Pump stores the liquidity, and migrate it to Raydium when possible.
+                A coding tour explaining how Pump.fun creates a liquidity pool on Raydium in an atomic and automated way.
+                This simplified example demonstrates how and why Pump stores liquidity and migrates it to Raydium when possible.
 			</p>
 		</header>
 
@@ -60,20 +61,20 @@
                 <div class="feature-item">
                     <h3 class="feature-item-title">Solana Account Types</h3>
                     <p class="feature-item-text">
-                        Introduce about the basic types of accounts in Solana.
-                        In which circumstances you use which type of account.
+                        Introduction to the basic types of accounts in Solana and
+                        when to use each type in different circumstances.
                     </p>
                 </div>
                 <div class="feature-item">
                     <h3 class="feature-item-title">Raydium Instructions</h3>
                     <p class="feature-item-text">
-                        Learn about how we integrate with Raydium SDK, and use instructions to create a liquidity pool.
+                        Learn how to integrate with the Raydium SDK and use instructions to create a liquidity pool.
                     </p>
                 </div>
                 <div class="feature-item">
                     <h3 class="feature-item-title">CPI to create a liquidity pool</h3>
                     <p class="feature-item-text">
-                        Learn about how we use store assets on program, and invoke CPI to create a liquidity pool on Raydium.
+                        Learn how to store assets in a program and invoke CPI to create a liquidity pool on Raydium.
                     </p>
                 </div>
             </div>
@@ -86,31 +87,31 @@
 				<h2 class="article-section-title">Introduction</h2>
 				<div>
 					<p class="article-text">
-						<strong>Pump.fun</strong> - The largest meme coin launchpad in Solana, has a great feature:
-						When a token reaches a certain price threshold, it can be paired with SOL to create a Raydium pool.
+						<strong>Pump.fun</strong>, the largest meme coin launchpad on Solana, offers a powerful feature:
+						when a token reaches a certain price threshold, it can be paired with SOL to create a Raydium pool.
 						The process involves three simple steps:
 					</p>
 					<ul class="article-list list-disc">
-						<li>Create a meme on Pump.fun program</li>
-						<li>Swap the meme on Pump.fun program</li>
-						<li>Once the meme's price reaches a target value, migrate the SOL and tokens from Pump.fun to
-							create a Raydium pool that allows trading on Raydium</li>
+						<li>Create a meme token on the Pump.fun program</li>
+						<li>Swap the meme token on the Pump.fun program</li>
+						<li>Once the meme token's price reaches a target value, migrate the SOL and tokens from Pump.fun to
+							create a Raydium pool, enabling trading on Raydium</li>
 					</ul>
 				</div>
                 <div>
                     <p class="article-text">
-                        The success of Pump.fun has inspired many people to create their own forks.
+                        The success of Pump.fun has inspired many developers to create their own forks.
                         Steps 1 and 2 are straightforward since they occur entirely within your forked program.
-                        The challenge arises with step 3: migrating your assets to Raydium.
+                        However, step 3 presents a challenge: migrating your assets to Raydium.
                         There are two main difficulties:
                     </p>
                     <ul class="article-list list-disc">
-                        <li>You need to build the correct Raydium instructions</li>
-                        <li>You need to understand Solana's account management</li>
+                        <li>Building the correct Raydium instructions</li>
+                        <li>Understanding Solana's account management system</li>
                     </ul>
                 </div>
 				<p class="article-text">
-                    We'll walk through this step by step and see how we tackle these challenges.
+                    This article will walk through these challenges step by step and demonstrate how to overcome them.
 				</p>
 
 			</section>
@@ -119,12 +120,12 @@
 			<section class="article-section">
 				<h2 class="article-section-title">How does Solana manage accounts</h2>
 				<p class="article-text">
-                    First of all, you need to understand the basics of Solana accounts. You can find detailed information about here.
-                    Below contents focus on what needed for this article. If you are familiar with Solana accounts,
-                    feel free to skip to the next part of this article.
+                    First, you need to understand the basics of Solana accounts. You can find detailed information in the official documentation.
+                    The content below focuses on what's needed for this article. If you're already familiar with Solana accounts,
+                    feel free to skip to the next section.
 				</p>
                 <p class="article-text">
-                    Everything in Solana is an account. An account contains following information:
+                    Everything in Solana is an account. An account contains the following information:
                 </p>
 
 				<div class="code-container">
@@ -137,13 +138,13 @@
 
                 <div>
                     <p class="article-text">
-                        Based on <code>executable</code> we can divide Solana account into two categories:
+                        Based on the <code>executable</code> field, we can divide Solana accounts into two categories:
                     </p>
 
                     <ul class="article-list list-disc">
                         <li>
                             <strong>Program account:</strong> An account with <code>executable = true</code>. This account
-                            contains executable code. Your deployed smart contract is this type.
+                            contains executable code. Deployed smart contracts use this type.
                         </li>
                         <li>
                             <strong>Data account:</strong> An account with <code>executable = false</code>. This account
@@ -287,12 +288,12 @@
 			<section class="article-section">
 				<h2 class="article-section-title">Create an FPump program</h2>
 				<p class="article-text">
-                    Now let's jump into the main purpose of this article: creating a Solana program that can migrate assets and create a Raydium pool.
-                    This section includes code, iterative updates, and a GitHub repo demonstrating the final implementation.
+                    Now let's address the main purpose of this article: creating a Solana program that can migrate assets and create a Raydium pool.
+                    This section includes code examples, iterative updates, and references to a GitHub repository demonstrating the final implementation.
 				</p>
 
 				<p class="article-text">
-                    This article assumes you know what Anchor is and how to build a program on Solana using Anchor.
+                    This article assumes you're familiar with Anchor and how to build programs on Solana using Anchor.
                     Let's prepare the prerequisites and initialize an Anchor program.
 				</p>
 
@@ -306,15 +307,15 @@
 
                 <div>
 				<p class="article-text">
-                    In our <code>FPump</code> program, we use simplified logic, supporting 2 instructions:
+                    In our <code>FPump</code> program, we use simplified logic supporting two instructions:
 				</p>
                 <ul class="article-list list-disc">
                     <li>
-                        <strong>create_token</strong>: Create a new mint, mints 1000_000 tokens, and transfer 10 SOL into the vault.
-                        This assets are used to create a Raydium pool, instead of waiting for the user to swap in.
+                        <strong>create_token</strong>: Creates a new mint, mints 1,000,000 tokens, and transfers 10 SOL into the vault.
+                        These assets are used to create a Raydium pool instead of waiting for users to swap.
                     </li>
                     <li>
-                        <strong>migrate</strong>: Perform creating a Raydium pool with 1000_000 tokens and 10 SOL.
+                        <strong>migrate</strong>: Creates a Raydium pool with 1,000,000 tokens and 10 SOL.
                     </li>
                 </ul>
                 </div>
@@ -323,23 +324,21 @@
             <section class="article-section">
 				<h2 class="article-section-title">Create a new token</h2>
                 <p class="article-text">
-                    We create a new mint token with 6 decimals.
-                    We then initialize a Vault PDA that stores 1,000,000 of the newly created tokens, and transfer 10 SOL into the vault.
-                    Check the branch mint-token for more details.
+                    We create a new mint token with 6 decimals, initialize a Vault PDA that stores 1,000,000 of the newly created tokens,
+                    and transfer 10 SOL into the vault. Check the <code>mint-token</code> branch for more details.
                 </p>
                 <p class="article-text">
-                    Raydium requires wSOL instead of SOL when creating a liquidity pool.
-                    So in our <code>FPump</code> program, we receive native SOL, then convert it to wSOL using <code>sync_native</code> instruction.
+                    Raydium requires wrapped SOL (wSOL) instead of native SOL when creating a liquidity pool.
+                    Therefore, in our <code>FPump</code> program, we receive native SOL and convert it to wSOL using the <code>sync_native</code> instruction.
                 </p>
 
 
-                <div class="code-container">
-					<div class="code-header">
-						<span class="code-filename">create_token.rs</span>
-						<span class="code-language">Rust</span>
-					</div>
-					<pre class="code-block"><code class="rust">{createTokenCode}</code></pre>
-				</div>
+				<CodeBlock
+					code={createTokenCode}
+					language="rust"
+					filename="create_token.rs"
+					maxLines={20}
+				/>
 
             </section>
 
@@ -347,13 +346,13 @@
                 <h2 class="article-section-title">Create a Raydium pool</h2>
 
                 <p class="article-text">
-                    So far so good. Now let's create a Raydium pool. There are several Raydium programs you can use to create a pool,
-                    each corresponding to specific pool logic. In this article, we use the latest version of CPMM, which works best
-                    for pools that pair SOL with a coin. 
+                    So far so good. Now let's create a Raydium pool. There are several Raydium programs available for creating pools,
+                    each corresponding to specific pool logic. In this article, we use the latest version of CPMM, which is optimized
+                    for pools that pair SOL with a token.
                 </p>
 
                 <p class="article-text">
-                    First, you need to install CPMM. Add this dependency in your Cargo.toml, then rebuild your program.
+                    First, you need to install CPMM. Add this dependency to your <code>Cargo.toml</code>, then rebuild your program.
                 </p>
 
                 <div class="code-container">
@@ -365,34 +364,33 @@
                 </div>
 
                 <div class="article-text">
-                    Now, let's create an migrate instruction in <code>FPump</code> that calls the initialize instruction to create a new pool in CPMM program.
+                    Now, let's create a <code>migrate</code> instruction in <code>FPump</code> that calls the <code>initialize</code> instruction to create a new pool in the CPMM program.
                 </div>
 
-                <div class="code-container">
-                    <div class="code-header">
-                        <span class="code-filename">migrate.rs</span>
-                        <span class="code-language">Rust</span>
-                    </div>
-                    <pre class="code-block"><code class="rust">{migrateRaydiumCode}</code></pre>
-                </div>
+				<CodeBlock
+					code={migrateRaydiumCode}
+					language="rust"
+					filename="migrate.rs"
+					maxLines={25}
+				/>
             </section>
 
             <p class="article-text">
-                Everything is ready, right ?. We are happy until execute the migration instruction, we got an error:
+                Everything appears ready. However, when we execute the migration instruction, we encounter an error:
             </p>
             <pre class="code-block">
-                <code class="bash">Error: AnchorError caused by account: vault. Error Code: AccountNotSystemOwned. Error Number: 3011. Error Message: The given account is not owned by the system program. </code>
+                <code class="bash">Error: AnchorError caused by account: vault. Error Code: AccountNotSystemOwned. Error Number: 3011. Error Message: The given account is not owned by the system program.</code>
             </pre>
-            <p class="article-text"><strong>NOO!!! WHY ??</strong></p>
+            <p class="article-text"><strong>What went wrong?</strong></p>
 
 
             <section class="article-section">
                 <h2 class="article-section-title">Let's correct the error</h2>
                 <p class="article-text">
-                    You can see the error: <code class="bash">account: vault. Error Code: AccountNotSystemOwned.</code>
+                    The error message is clear: <code>account: vault. Error Code: AccountNotSystemOwned.</code>
                 </p>
 
-                <p class=article-text><strong><code>migrate</code></strong> instruction requires <strong><code>vault</code></strong> to be owned by the SystemProgram.</p>
+                <p class="article-text">The <code>migrate</code> instruction requires <code>vault</code> to be owned by the SystemProgram.</p>
                 <div class="code-container">
                     <div class="code-header">
                         <span class="code-filename">initialize.rs</span>
@@ -401,14 +399,14 @@
                     <pre class="code-block"><code class="rust">{shortenInitializeCode}</code></pre>
                 </div>
 
-                <p class=article-text>
-                    Reasons ? <b><code>vault</code></b> is declared as <b><code>creator</code></b> in the <b><code>initialize</code></b> instruction,
-                    and this <b><code>creator</code></b> is responsible for paying the fee creation for the lp_token. And only the <b><code>SystemAccount</code></b> can pay that fee.
+                <p class="article-text">
+                    Why? <code>vault</code> is declared as <code>creator</code> in the <code>initialize</code> instruction,
+                    and this <code>creator</code> is responsible for paying the creation fee for the <code>lp_token</code>. Only a <code>SystemAccount</code> can pay that fee.
                 </p>
-                <p class=article-text>
-                    Of course, <b><code>vault</code></b> is not. Instead, it's a <b><code>Program State Account</code></b> managed by the <code>FPump</code> program. Because we have already initialized this account
-                    To fix this, just skip the <code>init</code> step. By default, all unitialized accounts are owned by the SystemProgram.
-                    And now, everything is perfect. You can check the master branch for the final code.
+                <p class="article-text">
+                    However, <code>vault</code> is not a SystemAccount. Instead, it's a <strong>Program State Account</strong> managed by the <code>FPump</code> program because we already initialized it.
+                    To fix this, we simply skip the <code>init</code> step. By default, all uninitialized accounts are owned by the SystemProgram.
+                    With this change, everything works perfectly. You can check the <code>master</code> branch for the final code.
                 </p>
 
 
@@ -438,8 +436,7 @@
 				</p>
 				<p class="article-text">
 					For developers and traders alike, understanding these mechanisms is crucial for
-					navigating the Solana DeFi ecosystem and building the next generation of tokenized
-					projects.
+					navigating the Solana DeFi ecosystem and building the next generation of tokenized projects.
 				</p>
 			</section>
 		</div>
