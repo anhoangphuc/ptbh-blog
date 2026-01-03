@@ -75,7 +75,7 @@ Reusable error display component for showing formatted error messages.
 ## Styles
 
 ### article.css
-Shared styling for blog articles. Provides:
+Shared styling for individual blog articles. Provides:
 - Typography (Playfair Display, Inter, JetBrains Mono)
 - Article layout classes
 - Code block styling (including collapsible code blocks)
@@ -93,11 +93,73 @@ Shared styling for blog articles. Provides:
 </article>
 ```
 
-**Code Block CSS Classes:**
-- `.code-container` - Main code block wrapper
+**Key CSS Classes:**
+- `.article-container` - Main article wrapper with gradient background
+- `.article-title` - Article title styling
+- `.article-text` - Article paragraph text
+- `.code-container` - Code block wrapper
 - `.code-header` - Code block header with filename
 - `.code-block` - Code content area
 - `.code-expand-button` - Expand/collapse button
-- `.code-block-content.collapsed` - Collapsed state with gradient
+- `.feature-grid` - Feature grid layout
+- `.info-box` - Information boxes
 
 See the Pump.fun article for a complete example: `src/routes/articles/blockchain/pumpfun-with-raydium/+page.svelte`
+
+### articles-listing.css
+Shared styling for article listing pages (category indexes). Provides:
+- Article card grid layout
+- Card hover effects and animations
+- Tag styling
+- Empty state styling
+
+**Usage:**
+```svelte
+<script>
+  import '$lib/styles/article.css';
+  import '$lib/styles/articles-listing.css';
+</script>
+
+<div class="article-container">
+  <div class="articles-grid">
+    <a href="/articles/blockchain/slug" class="article-card">
+      <div class="article-card-header">
+        <div class="article-card-tags">
+          <span class="article-tag">Tag</span>
+        </div>
+        <div class="article-card-meta">
+          <time>Date</time>
+          <span>•</span>
+          <span>Read time</span>
+        </div>
+      </div>
+      <div class="article-card-content">
+        <h2 class="article-card-title">Title</h2>
+        <p class="article-card-description">Description</p>
+      </div>
+      <div class="article-card-footer">
+        <span class="article-card-link">Read Article →</span>
+      </div>
+    </a>
+  </div>
+</div>
+```
+
+**Key CSS Classes:**
+- `.articles-grid` - Responsive grid layout (1 col mobile, 2 cols tablet+)
+- `.article-card` - Individual article card with hover effects
+- `.article-card-header` - Card header section with tags and meta
+- `.article-card-tags` - Tag container
+- `.article-tag` - Individual tag badge
+- `.article-card-meta` - Date and read time
+- `.article-card-content` - Main card content area
+- `.article-card-title` - Card title
+- `.article-card-description` - Card description
+- `.article-card-footer` - Card footer with link
+- `.article-card-link` - "Read Article" link with arrow
+- `.empty-state` - Empty state when no articles exist
+- `.empty-state-icon` - Icon container
+- `.empty-state-title` - Empty state title
+- `.empty-state-text` - Empty state message
+
+See the blockchain articles page for a complete example: `src/routes/articles/blockchain/+page.svelte`
