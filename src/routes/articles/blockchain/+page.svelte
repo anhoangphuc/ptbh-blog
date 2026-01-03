@@ -22,7 +22,7 @@
 			</div>
 			<h1 class="article-title">Blockchain Development</h1>
 			<p class="article-subtitle">
-				Deep dives into blockchain development, smart contracts, and decentralized applications on Solana and beyond
+				Deep dives into blockchain development, smart contracts, and decentralized applications
 			</p>
 		</header>
 
