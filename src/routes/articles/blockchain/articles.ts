@@ -8,6 +8,16 @@ export const articles = [
 			date: '2026-01-02',
 			readTime: '15 min read',
 			tags: ['Solana', 'DeFi', 'Raydium', 'Anchor']
+		},
+		{
+			title: 'A gentle introduction to Uniswap v3 ticks',
+			description: 'A gentle introduction to Uniswap v3 ticks, help you have a better sense why it is and how does it work.',
+			slug: 'uniswapv3-tick-easy-way',
+			category: 'blockchain',
+			categoryLabel: 'Blockchain',
+			date: '2026-01-03',
+			readTime: '10 min read',
+			tags: ['Ethereum', 'DeFi', 'Uniswap', 'Solidity']
 		}
 		// Add more blockchain articles here as you create them
 	];
