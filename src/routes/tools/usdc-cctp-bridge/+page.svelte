@@ -42,7 +42,11 @@
 					<p class="article-text">
 						After searching for a while without finding a suitable testnet bridging tool, I built one myself.
 						This tool allows you to bridge USDC between Ethereum Sepolia and Solana Devnet for testing purposes.
-						Try it out at <b><a href="https://cctp-bridged.vercel.app/" target="_blank">USDC Bridge</a></b>.
+					</p>
+
+					<p class="article-text">
+						TRY IT OUT AT <b><a href="https://cctp-bridged.vercel.app/" target="_blank">USDC BRIDGE</a></b>
+						<i><a href="https://cctp-bridged.vercel.app/" target="_blank">(https://cctp-bridged.vercel.app/)</a></i>
 					</p>
 
 					<div class="my-8">
