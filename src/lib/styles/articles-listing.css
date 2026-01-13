@@ -57,6 +57,11 @@
 	color: rgb(126, 34, 206);
 }
 
+.article-tag.tag-green {
+	background-color: rgb(220, 252, 231);
+	color: rgb(22, 163, 74);
+}
+
 .article-card-meta {
 	display: flex;
 	align-items: center;
