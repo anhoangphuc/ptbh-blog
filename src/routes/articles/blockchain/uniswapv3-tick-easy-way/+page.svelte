@@ -6,14 +6,9 @@
 	import 'highlight.js/styles/github-dark.css';
 
 	import '$lib/styles/article.css';
-	import CodeBlock from '$lib/components/CodeBlock.svelte';
 	import InlinedCode from '$lib/components/InlinedCode.svelte';
 
 	const { data }: { data: PageData } = $props();
-	const tickSpacingExample = $derived(data.tickSpacingExample);
-	const tickMathExample = $derived(data.tickMathExample);
-	const rangeExample = $derived(data.rangeExample);
-	const concentratedLiquidityCode = $derived(data.concentratedLiquidityCode);
 
 	hljs.registerLanguage('typescript', typescript);
 
@@ -39,7 +34,7 @@
 				<span>•</span>
 				<time datetime="2026-01-04">January 4, 2026</time>
 				<span>•</span>
-				<span>10 min read</span>
+				<span>20 min read</span>
 			</div>
 			<h1 class="article-title">Understanding Uniswap V3 Ticks - The Easy Way</h1>
 			<p class="article-subtitle">
@@ -53,23 +48,27 @@
 			<h2 class="article-section-title">What you will learn</h2>
 			<div class="feature-grid-items">
 				<div class="feature-item">
-					<h3 class="feature-item-title">Tick Spacing Basics</h3>
+					<h3 class="feature-item-title">Tick Definition</h3>
 					<p class="feature-item-text">
-						Understand what ticks are, how tick spacing works across different fee tiers,
-						and why they're fundamental to Uniswap V3.
+						Understand what ticks are and how they enable efficient liquidity provision.
 					</p>
 				</div>
 				<div class="feature-item">
-					<h3 class="feature-item-title">Price Calculations</h3>
+					<h3 class="feature-item-title">Difference Array Technique</h3>
 					<p class="feature-item-text">
-						Learn how to convert between tick values and prices using simple mathematical formulas.
+						Discover the algorithmic foundation that makes Uniswap V3's tick system efficient.
 					</p>
 				</div>
 				<div class="feature-item">
-					<h3 class="feature-item-title">Liquidity Ranges</h3>
+					<h3 class="feature-item-title">Liquidity Management</h3>
 					<p class="feature-item-text">
-						Discover how to provide liquidity in specific price ranges and understand
-						the benefits of concentrated liquidity.
+						Learn how to manage liquidity in Uniswap V3 through the tick system.
+					</p>
+				</div>
+				<div class="feature-item">
+					<h3 class="feature-item-title">Swap Mechanics</h3>
+					<p class="feature-item-text">
+						See how swaps interact with ticks and how crossing boundaries affects liquidity.
 					</p>
 				</div>
 			</div>
@@ -82,331 +81,1123 @@
 				<h2 class="article-section-title">Introduction</h2>
 				<div>
 					<p class="article-text">
-						I think there are many people like me, feeling shock in the first time we encounter the concept of Uniswap V3.
-						Even we're very familiar with the Uniswap V2, there are so many new concepts and features in Uniswap V3 we need to understand.
-						Of of them is <InlinedCode variable="ticks" color="blue" strong />
-						<br />
+						Many people, including myself, felt overwhelmed when first encountering the concept of Uniswap V3.
+						Even if you're familiar with Uniswap V2, there are many new concepts and features in Uniswap V3 to understand.
+						One of them is <InlinedCode variable="ticks" color="blue" strong />.
+					</p>
 
-						<strong><a href="https://uniswap.org/" target="_blank">Uniswap V3</a></strong> revolutionized
+					<p class="article-text">
+						You've probably seen descriptions like this: <a href="https://uniswap.org/" target="_blank"><InlinedCode variable="Uniswap V3" color="blue" strong /></a> revolutionized
 						automated market making (AMM) by introducing concentrated liquidity. Unlike Uniswap V2, where
 						liquidity is spread across the entire price curve (0 to ∞), V3 allows liquidity providers (LPs)
 						to concentrate their capital within specific price ranges.
 					</p>
 					<p class="article-text">
-						At the heart of this innovation lies the concept of <strong>ticks</strong>—discrete price
-						points that define where liquidity can be placed. Understanding ticks is essential for anyone
-						who wants to provide liquidity efficiently or build on top of Uniswap V3.
+						This definition wasn't very clear to me at first. I tried to understand it better by reading the Uniswap V3 contract code,
+						but quickly felt overwhelmed. The code related to ticks is quite complex. I wanted to find a well-balanced explanation—not too general, but not too complex either.
+					</p>
+					<p class="article-text">
+						In this article, I'll explain what ticks are from a conceptual level. I hope this article can help people like my past self understand the concept of ticks easily without feeling intimidated.
+						For implementation details, I'll cover those in a separate article.
 					</p>
 				</div>
 			</section>
 
-			<!-- What Are Ticks -->
 			<section class="article-section">
-				<h2 class="article-section-title">What Are Ticks?</h2>
+				<h2 class="article-section-title">One-Dimensional Difference Array Technique</h2>
 				<p class="article-text">
-					In Uniswap V3, the continuous price space is divided into discrete units called
-					<InlinedCode variable="ticks" color="purple" strong />. Each tick represents a specific price point
-					at which liquidity can be added or removed.
+					Before diving into how Uniswap V3 uses ticks, let's understand a fundamental algorithmic technique that makes it all possible: the <strong>1D Difference Array</strong>.
+					This classic optimization technique efficiently handles range updates on arrays.
+				</p>
+
+				<p class="article-text">
+					<strong>The Problem:</strong> Imagine you have an array of values (all starting at 0), and you need to add or subtract values across ranges [L, R) many times.
+					Calculate the value of the array after all updates.
 				</p>
 				<p class="article-text">
-					Mathematically, each tick corresponds to a price calculated using the formula:
+					<strong>Naive Solution:</strong> Iterates through every element in each range and updates it, resulting in O(n) time complexity per update.
+					With many updates, this becomes very inefficient.
 				</p>
-				<div class="info-box">
-					<p class="info-box-text">
-						<strong>Price Formula:</strong> <code>price = 1.0001^tick</code>
-						<br /><br />
-						Where <code>tick</code> is an integer value that can be positive, negative, or zero.
-						<br />
-						• tick = 0 corresponds to a 1:1 price ratio
-						<br />
-						• Positive ticks represent prices greater than 1
-						<br />
-						• Negative ticks represent prices less than 1
-					</p>
+
+				<div class="article-text">
+					<strong>Efficient Solution:</strong> Instead of updating every element, the difference array technique stores only the <em>changes at boundaries</em>.
+					When adding a value V across range [L, R), you simply:
+					<ul class="article-list list-disc">
+						<li>Mark <strong><code>+V</code></strong> at index L (where the range begins)</li>
+						<li>Mark <strong><code>-V</code></strong> at index R (where the range ends)</li>
+					</ul>
 				</div>
 				<p class="article-text">
-					This exponential relationship means that each tick represents approximately a 0.01% price change
-					from the previous tick. This precision allows for fine-grained control over liquidity placement.
-				</p>
-			</section>
-
-			<!-- Tick Spacing -->
-			<section class="article-section">
-				<h2 class="article-section-title">Understanding Tick Spacing</h2>
-				<p class="article-text">
-					Not all ticks are usable in Uniswap V3. To reduce gas costs and prevent pool fragmentation,
-					only certain ticks can have liquidity positions. This restriction is called
-					<InlinedCode variable="tick spacing" color="blue" strong />.
-				</p>
-				<p class="article-text">
-					Tick spacing varies by fee tier. Uniswap V3 has three main fee tiers, each with its own tick spacing:
+					To get the actual value at any index, you accumulate all changes from the beginning.
+					This reduces each range update from O(n) to O(1).
 				</p>
 
-				<div class="code-container">
-					<div class="code-header">
-						<span class="code-filename">fee-tiers.ts</span>
-						<span class="code-language">TypeScript</span>
+				<div class="example-box example-box-blue">
+					<div class="example-box-header">
+						Difference Array in Action
 					</div>
-					<pre class="code-block"><code class="typescript">{tickSpacingExample}</code></pre>
+					<div class="example-box-content">
+						<p class="font-semibold text-slate-900 mb-2">Operations:</p>
+						<ol class="article-list list-decimal">
+							<li>Add 100 to range [2, 5)</li>
+							<li>Add 75 to range [1, 6)</li>
+							<li>Subtract 50 from range [3, 5)</li>
+						</ol>
+
+						<p class="font-semibold text-slate-900 mt-4 mb-2">Delta Array (boundary changes):</p>
+						<p class="text-sm text-slate-600 mb-3">Only store what changes at each boundary:</p>
+						<div class="font-mono text-sm bg-slate-100 p-3 rounded mb-3">
+							<div style="display: grid; grid-template-columns: repeat(10, 1fr); gap: 0.25rem;">
+								<div style="padding: 0.5rem; background: white; border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[0]</div>
+									<div style="color: rgb(148, 163, 184);">0</div>
+								</div>
+								<div style="padding: 0.5rem; background: rgb(243, 232, 255); border: 1px solid rgb(196, 181, 253); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[1]</div>
+									<div style="color: rgb(22, 163, 74); font-weight: 600;">+75</div>
+								</div>
+								<div style="padding: 0.5rem; background: rgb(243, 232, 255); border: 1px solid rgb(196, 181, 253); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[2]</div>
+									<div style="color: rgb(22, 163, 74); font-weight: 600;">+100</div>
+								</div>
+								<div style="padding: 0.5rem; background: rgb(243, 232, 255); border: 1px solid rgb(196, 181, 253); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[3]</div>
+									<div style="color: rgb(185, 28, 28); font-weight: 600;">-50</div>
+								</div>
+								<div style="padding: 0.5rem; background: white; border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[4]</div>
+									<div style="color: rgb(148, 163, 184);">0</div>
+								</div>
+								<div style="padding: 0.5rem; background: rgb(243, 232, 255); border: 1px solid rgb(196, 181, 253); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[5]</div>
+									<div style="color: rgb(185, 28, 28); font-weight: 600;">-50</div>
+								</div>
+								<div style="padding: 0.5rem; background: rgb(243, 232, 255); border: 1px solid rgb(196, 181, 253); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[6]</div>
+									<div style="color: rgb(185, 28, 28); font-weight: 600;">-75</div>
+								</div>
+								<div style="padding: 0.5rem; background: white; border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[7]</div>
+									<div style="color: rgb(148, 163, 184);">0</div>
+								</div>
+								<div style="padding: 0.5rem; background: white; border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[8]</div>
+									<div style="color: rgb(148, 163, 184);">0</div>
+								</div>
+								<div style="padding: 0.5rem; background: white; border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[9]</div>
+									<div style="color: rgb(148, 163, 184);">0</div>
+								</div>
+							</div>
+						</div>
+						<p class="text-xs text-slate-600 mb-1">Each operation only modifies 2 positions: the start and end boundaries.</p>
+						<p class="text-xs text-slate-600 mb-4">For example, value at index 5 is: -100 + 50 = -50 </p>
+
+						<p class="font-semibold text-slate-900 mb-2">Final Array (accumulated values):</p>
+						<p class="text-sm text-slate-600 mb-3">Accumulate deltas from left to right to get actual values:</p>
+						<div class="font-mono text-sm bg-green-50 p-3 rounded border border-green-200">
+							<div style="display: grid; grid-template-columns: repeat(10, 1fr); gap: 0.25rem;">
+								<div style="padding: 0.5rem; background: white; border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[0]</div>
+									<div style="color: rgb(148, 163, 184);">0</div>
+								</div>
+								<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[1]</div>
+									<div style="color: rgb(22, 101, 52); font-weight: 600;">75</div>
+								</div>
+								<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[2]</div>
+									<div style="color: rgb(22, 101, 52); font-weight: 600;">175</div>
+								</div>
+								<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[3]</div>
+									<div style="color: rgb(22, 101, 52); font-weight: 600;">125</div>
+								</div>
+								<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[4]</div>
+									<div style="color: rgb(22, 101, 52); font-weight: 600;">125</div>
+								</div>
+								<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[5]</div>
+									<div style="color: rgb(22, 101, 52); font-weight: 600;">75</div>
+								</div>
+								<div style="padding: 0.5rem; background: white; border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[6]</div>
+									<div style="color: rgb(148, 163, 184);">0</div>
+								</div>
+								<div style="padding: 0.5rem; background: white; border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[7]</div>
+									<div style="color: rgb(148, 163, 184);">0</div>
+								</div>
+								<div style="padding: 0.5rem; background: white; border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[8]</div>
+									<div style="color: rgb(148, 163, 184);">0</div>
+								</div>
+								<div style="padding: 0.5rem; background: white; border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+									<div style="color: rgb(100, 116, 139); font-size: 0.75rem;">[9]</div>
+									<div style="color: rgb(148, 163, 184);">0</div>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 
-				<div class="info-box">
-					<p class="info-box-text">
-						<strong>Explanation:</strong> Lower fee tiers (0.05%) have tighter tick spacing (every 10 ticks),
-						allowing for more precise liquidity placement. Higher fee tiers (1%) have wider spacing (every 200 ticks),
-						which is suitable for more volatile pairs. This design balances gas efficiency with capital efficiency.
-					</p>
-				</div>
-
-				<br />
-
-				<p class="article-text">
-					For example, in a 0.3% fee tier pool (tick spacing = 60), you can only add liquidity at ticks
-					that are multiples of 60: ..., -120, -60, 0, 60, 120, ...
-				</p>
 			</section>
 
-			<!-- Tick Math -->
 			<section class="article-section">
-				<h2 class="article-section-title">Converting Between Ticks and Prices</h2>
+				<h2 class="article-section-title">Understanding Ticks the Easy Way</h2>
 				<p class="article-text">
-					When providing liquidity or analyzing positions, you'll often need to convert between human-readable
-					prices and tick values. Here are the conversion formulas:
+					At its core, <InlinedCode variable="ticks" color="blue" strong /> are represented as an array. Each element in this array contains information about a specific price point.
+					The most important piece of information stored at each tick is <InlinedCode variable="liquidityNet" color="blue" strong />—the change in liquidity at that price point.
+				</p>
+				<p class="article-text">
+					To start, you can think of ticks as an array where each index mapping to a discrete price point, and the value at that index tells you how liquidity changes when the price crosses that point.
+					It's similar to the difference array technique we discussed earlier.
 				</p>
 
-				<CodeBlock
-					code={tickMathExample}
-					language="typescript"
-					filename="tick-math.ts"
-					maxLines={20}
-				/>
-
-				<div class="info-box">
-					<p class="info-box-text">
-						<strong>Explanation:</strong> The <code>tickToPrice</code> function raises 1.0001 to the power
-						of the tick to get the price. The <code>priceToTick</code> function does the reverse using logarithms.
-						Note that we use <code>Math.floor</code> to ensure the tick is valid and aligns with tick spacing.
-						<br /><br />
-						At tick 0, the price is exactly 1:1. At tick 10,000, the price is approximately 2.7183
-						(about e, Euler's number), meaning the token has increased in value by roughly 171.8%.
-					</p>
-				</div>
-			</section>
-
-			<!-- Liquidity Ranges -->
-			<section class="article-section">
-				<h2 class="article-section-title">Providing Liquidity in Price Ranges</h2>
-				<p class="article-text">
-					The power of Uniswap V3 comes from concentrated liquidity. Instead of spreading your capital
-					across the entire price curve, you can concentrate it within a specific price range defined
-					by two ticks: <InlinedCode variable="tickLower" color="blue" /> and <InlinedCode variable="tickUpper" color="blue" />.
-				</p>
-
-				<div class="code-container">
-					<div class="code-header">
-						<span class="code-filename">liquidity-position.ts</span>
-						<span class="code-language">TypeScript</span>
+				<!-- Subsection 1: Basic Terminology -->
+				<div class="article-subsection">
+					<h3 class="article-subsection-title">Basic Terminology</h3>
+					<div class="article-text">
+						<p>
+							An <InlinedCode variable="Uniswap pool" color="blue" strong /> contains two tokens (like <InlinedCode variable="ETH/USDC" color="gray" strong /> or <InlinedCode variable="ETH/BTC" color="gray" strong />).
+						Throughout this article, we'll use ETH/USDC as our example, where:
+						</p>
+						<ul class="article-list list-disc">
+							<li><InlinedCode variable="ETH" color="gray" strong /> is token X (the base token)</li> 
+							<li><InlinedCode variable="USDC" color="gray" strong /> is token Y (the quote token)</li>
+							<li><InlinedCode variable="Price" color="gray" strong /> means how many <InlinedCode variable="USDC" color="gray" strong /> per 1 <InlinedCode variable="ETH" color="gray" strong /> (e.g., price = 2000 means 1 <InlinedCode variable="ETH" color="gray" strong /> = 2000 <InlinedCode variable="USDC" color="gray" strong />)</li>
+							<li><InlinedCode variable="Price range" color="gray" strong /> [2000, 3000) means a range of price of the pool is from 2000 to 3000, excluding 3000</li>
+						</ul>
 					</div>
-					<pre class="code-block"><code class="typescript">{rangeExample}</code></pre>
 				</div>
 
-				<div class="info-box">
-					<p class="info-box-text">
-						<strong>Explanation:</strong> This example shows a liquidity position for an ETH/USDC pair.
-						The provider believes ETH will trade between $1,800 and $2,200, so they concentrate their
-						liquidity in that range. If the price stays within this range, they'll earn much higher fees
-						relative to their capital compared to V2. However, if the price moves outside this range,
-						their liquidity becomes inactive and doesn't earn fees.
+				<!-- Subsection 2: Simplified Model -->
+				<div class="article-subsection">
+					<h3 class="article-subsection-title">Each Tick Represents a Price Point</h3>
+					<p class="article-text">
+						In <InlinedCode variable="Uniswap V3" color="blue" strong />, each tick index corresponds to a specific price. The relationship between a tick index and its price is defined by a mathematical formula.
+						Therefore, some price range can also be represented by a tick range, with each tick corresponding to a specific price.
 					</p>
-				</div>
 
-				<br />
+					<div class="example-box example-box-purple">
+						<div class="example-box-header">
+							Our Simplified Model
+						</div>
+						<div class="example-box-content">
+							<p class="article-text">
+								For this article, we'll use a simple linear formula to make the concepts easier to follow:
+							</p>
 
-				<p class="article-text">
-					When you provide liquidity in a range:
-				</p>
-				<ul class="article-list list-disc">
-					<li>
-						Your liquidity is <strong>active</strong> and earns fees when the current price is between
-						<InlinedCode variable="tickLower" color="blue" /> and <InlinedCode variable="tickUpper" color="blue" />
-					</li>
-					<li>
-						Your position is composed entirely of one token if the price is outside your range
-					</li>
-					<li>
-						The narrower your range, the more capital efficient your position, but the higher the risk
-						of the price moving outside your range
-					</li>
-				</ul>
-			</section>
+							<div class="font-mono text-lg text-center font-semibold text-purple-700 mb-3 mt-4">
+								price = 4 × tick_index
+							</div>
 
-			<!-- V2 vs V3 Comparison -->
-			<section class="article-section">
-				<h2 class="article-section-title">Concentrated Liquidity: V2 vs V3</h2>
-				<p class="article-text">
-					Let's compare traditional AMM liquidity (Uniswap V2) with concentrated liquidity (Uniswap V3):
-				</p>
-
-				<div class="code-container">
-					<div class="code-header">
-						<span class="code-filename">v2-vs-v3.ts</span>
-						<span class="code-language">TypeScript</span>
-					</div>
-					<pre class="code-block"><code class="typescript">{concentratedLiquidityCode}</code></pre>
-				</div>
-
-				<div class="info-box">
-					<p class="info-box-text">
-						<strong>Key Insight:</strong> Uniswap V3's concentrated liquidity can achieve up to 4000x
-						higher capital efficiency compared to V2. This means you can provide the same depth of liquidity
-						with far less capital—or earn significantly more fees with the same amount of capital. The
-						tradeoff is that you need to actively manage your positions to keep them in range.
-					</p>
-				</div>
-
-				<br />
-
-				<!-- Comparison Table -->
-				<div class="my-8 overflow-hidden rounded-xl bg-white shadow-lg">
-					<div class="border-b border-slate-200 bg-gradient-to-r from-purple-50 to-blue-50 px-6 py-4">
-						<h3 class="text-xl font-bold text-slate-900" style="font-family: 'Playfair Display', serif;">
-							Uniswap V2 vs V3 Comparison
-						</h3>
+							<p class="article-text">
+								With this formula, assuming ETH price ranges from $4 to $4,000:
+							</p>
+							<ul class="article-list list-disc">
+								<li>Tick 1 = $4</li>
+								<li>Tick 500 = $2,000</li>
+								<li>Tick 750 = $3,000</li>
+								<li>Tick 1,000 = $4,000</li>
+							</ul>
+						</div>
 					</div>
 
-					<!-- Table -->
-					<div class="overflow-x-auto">
-						<table class="w-full">
-							<thead class="bg-slate-50">
-								<tr>
-									<th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Feature</th>
-									<th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Uniswap V2</th>
-									<th class="px-6 py-3 text-left text-sm font-semibold text-slate-700">Uniswap V3</th>
-								</tr>
-							</thead>
-							<tbody class="divide-y divide-slate-200">
-								<tr class="hover:bg-slate-50">
-									<td class="px-6 py-4 text-sm font-medium text-slate-900">Liquidity Distribution</td>
-									<td class="px-6 py-4 text-sm text-slate-600">Spread across entire curve (0 to ∞)</td>
-									<td class="px-6 py-4 text-sm text-green-600 font-medium">Concentrated in custom ranges</td>
-								</tr>
-								<tr class="hover:bg-slate-50">
-									<td class="px-6 py-4 text-sm font-medium text-slate-900">Capital Efficiency</td>
-									<td class="px-6 py-4 text-sm text-slate-600">Low - most capital unused</td>
-									<td class="px-6 py-4 text-sm text-green-600 font-medium">Up to 4000x higher</td>
-								</tr>
-								<tr class="hover:bg-slate-50">
-									<td class="px-6 py-4 text-sm font-medium text-slate-900">Fee Earnings</td>
-									<td class="px-6 py-4 text-sm text-slate-600">Diluted across all prices</td>
-									<td class="px-6 py-4 text-sm text-green-600 font-medium">Concentrated in active range</td>
-								</tr>
-								<tr class="hover:bg-slate-50">
-									<td class="px-6 py-4 text-sm font-medium text-slate-900">Fee Tiers</td>
-									<td class="px-6 py-4 text-sm text-slate-600">Fixed 0.3%</td>
-									<td class="px-6 py-4 text-sm text-green-600 font-medium">Multiple tiers (0.05%, 0.3%, 1%)</td>
-								</tr>
-								<tr class="hover:bg-slate-50">
-									<td class="px-6 py-4 text-sm font-medium text-slate-900">Position Management</td>
-									<td class="px-6 py-4 text-sm text-green-600 font-medium">Passive - set and forget</td>
-									<td class="px-6 py-4 text-sm text-slate-600">Active - requires monitoring</td>
-								</tr>
-								<tr class="hover:bg-slate-50">
-									<td class="px-6 py-4 text-sm font-medium text-slate-900">Impermanent Loss Risk</td>
-									<td class="px-6 py-4 text-sm text-slate-600">Present but spread out</td>
-									<td class="px-6 py-4 text-sm text-slate-600">Higher if price exits range</td>
-								</tr>
-								<tr class="hover:bg-slate-50">
-									<td class="px-6 py-4 text-sm font-medium text-slate-900">Gas Costs</td>
-									<td class="px-6 py-4 text-sm text-green-600 font-medium">Lower (simpler logic)</td>
-									<td class="px-6 py-4 text-sm text-slate-600">Higher (more complex)</td>
-								</tr>
-							</tbody>
-						</table>
-						<br />
-						<div class="info-box">
-							<p class="info-box-text">
-								This table highlights the key tradeoffs between V2's simplicity and V3's capital efficiency.
-								V3 offers significantly better returns for active LPs but requires more sophisticated management.
+					<div class="example-box example-box-blue">
+						<div class="example-box-header">
+							Real Uniswap V3 Formula
+						</div>
+						<div class="example-box-content">
+							<p class="article-text">
+								In the actual Uniswap V3 implementation, the price-to-tick relationship uses an exponential formula:
+							</p>
+
+							<div class="font-mono text-center text-lg font-semibold text-blue-900 my-4">
+								price = 1.0001<sup>tick</sup>
+							</div>
+
+							<p class="article-text">
+								This exponential spacing allows the protocol to support an enormous price range (from nearly 0 to nearly infinity) with consistent percentage-based tick spacing.
+								We use a simplified linear formula in this article to make the core concepts easier to understand.
 							</p>
 						</div>
 					</div>
 				</div>
-			</section>
 
-			<!-- Practical Example -->
-			<section class="article-section">
-				<h2 class="article-section-title">Practical Example: ETH/USDC Pool</h2>
-				<p class="article-text">
-					Let's walk through a concrete example of providing liquidity to an ETH/USDC pool:
-				</p>
+				<!-- Subsection 3: Concentrated Liquidity -->
+				<div class="article-subsection">
+					<h3 class="article-subsection-title">Concentrated Liquidity with a Price Range</h3>
 
-				<div class="info-box">
-					<p class="info-box-text">
-						<strong>Scenario:</strong> You have $10,000 to provide as liquidity. ETH is currently trading at $2,000.
-						<br /><br />
-						<strong>V2 Approach:</strong>
-						<br />
-						• Deposit $5,000 in USDC + $5,000 in ETH (2.5 ETH)
-						<br />
-						• Your liquidity earns 0.3% fees on ALL trades, but it's spread from $0 to infinity
-						<br />
-						• Capital efficiency: Low (most liquidity is never used)
-						<br /><br />
-						<strong>V3 Approach (0.3% fee tier):</strong>
-						<br />
-						• You believe ETH will trade between $1,800 - $2,200 (90% - 110% of current price)
-						<br />
-						• Set tickLower = -276325 (≈$1,800) and tickUpper = -276110 (≈$2,200)
-						<br />
-						• Your $10,000 acts like ~$50,000 in a V2 pool within this range
-						<br />
-						• You earn 5x more fees per dollar—but only when price stays in range
+					<p class="article-text">
+						<strong>Reminder:</strong> The key innovation in Uniswap V3 is concentrated liquidity. Instead of spreading capital across all possible prices,
+						liquidity providers can concentrate it within a specific price range where they expect trading to occur.
 					</p>
+
+					<div class="article-text">
+						<p>When providing liquidity in V3, liquidity providers specify:</p>
+						<ul class="article-list list-disc">
+							<li><strong>Liquidity amount</strong> - How much capital to provide</li>
+							<li><strong>Price range</strong> - The minimum and maximum prices for the position</li>
+						</ul>
+					</div>
+
+
+					<div class="example-box example-box-purple">
+						<div class="example-box-header">
+							Concentrated liquidity in Uniswap V3
+						</div>
+						<div class="example-box-content">
+							<p class="article-text">
+								Liquidity providers choose specific price ranges. Notice how different providers' ranges can overlap, creating varying liquidity depths at different price points.
+								The prices in these ranges are not arbitrary—they correspond to specific tick indices.
+							</p>
+
+							<p class="font-semibold text-slate-900 mb-2">Operations:</p>
+							<ul class="article-list list-decimal">
+								<li>Adds 1,000 liquidity in range [$2,000, $3,000) → ticks [500, 750)</li>
+								<li>Adds 2,000 liquidity in range [$2,500, $3,500) → ticks [625, 875)</li>
+								<li>Removes 500 liquidity from range [$2,000, $2,500) → ticks [500, 625)</li>
+							</ul>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">Resulting Liquidity Array:</p>
+							<p class="text-sm text-slate-600 mb-3">
+								The liquidity at each tick index (showing key ticks in the array):
+							</p>
+							<div class="bg-green-50 p-4 rounded-lg border border-green-200">
+								<div class="font-mono text-sm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 0.5rem;">
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">1</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">499</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">500</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">500</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">501</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">500</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">500</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">624</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">625</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">626</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">749</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">750</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">2,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">751</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">2,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">2,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">874</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">2,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">875</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">876</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">1000</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+								</div>
+								<p class="text-sm text-green-800 mt-4">
+									The array shows liquidity at each tick. Ticks with green backgrounds and bold borders (500, 625, 750, 875) are boundary ticks where liquidity changes. Notice how liquidity remains constant between boundaries: 0 before tick 500, then 500 from ticks 500-624, then 2,500 from ticks 625-749, then 2,000 from ticks 750-874, and back to 0 from tick 875 onwards.
+								</p>
+							</div>
+						</div>
+					</div>
+
+					<p class="article-text">
+						<strong>Contrast with Uniswap V2:</strong> In V2, there is no concept of price ranges. Every liquidity provider's capital is automatically spread across the entire price curve, from 0 to infinity. This means your liquidity is available at all prices, even extremely unlikely ones.
+					</p>
+
+					<div class="example-box example-box-purple">
+						<div class="example-box-header">
+							Spread liquidity in Uniswap V2
+						</div>
+						<div class="example-box-content">
+							<p class="article-text">
+								Consider the same operations in Uniswap V2:
+							</p>
+
+							<ul class="article-list list-disc">
+								<li>Adds 1000 liquidity (spread across all prices)</li>
+								<li>Adds 2000 liquidity (spread across all prices)</li>
+								<li>Removes 500 liquidity (spread across all prices)</li>
+							</ul>
+
+							<p class="article-text">
+								<strong>Result:</strong> Total liquidity = 2,500 (1000 + 2000 - 500) uniformly distributed across the entire price range [$4, $4,000).
+							</p>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">Resulting Liquidity Array:</p>
+							<p class="text-sm text-slate-600 mb-3">
+								In V2, liquidity is spread uniformly across all ticks (every tick has the same liquidity):
+							</p>
+							<div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+								<div class="font-mono text-sm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 0.5rem;">
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">1</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">499</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">500</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">501</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">624</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">625</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">626</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">749</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">750</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">751</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">874</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">875</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">876</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(219, 234, 254); border: 1px solid rgb(147, 197, 253); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">1000</div>
+										<div style="color: rgb(30, 58, 138); font-weight: 600;">2,500</div>
+									</div>
+								</div>
+								<p class="text-sm text-blue-800 mt-4">
+									Unlike V3's concentrated liquidity, V2 spreads the same 2,500 liquidity uniformly across every single tick from 0 to 1000. There are no boundaries or variations—every price point has identical liquidity depth, resulting in capital inefficiency.
+								</p>
+							</div>
+						</div>
+					</div>
+
+					<p class="article-text">
+						<strong>Why this matters:</strong> By concentrating liquidity where trading actually happens, <InlinedCode variable="Uniswap V3" color="blue" strong /> allows liquidity providers to offer deeper liquidity with the same amount of capital as <InlinedCode variable="Uniswap V2" color="blue" strong />.
+						This means liquidity providers can earn more fees with less capital. However, if the price moves outside the chosen range, the position stops earning fees until the price returns to that range.
+					</p>
+
 				</div>
 
-				<p class="article-text">
-					The key insight: With V3, you're making a bet on where the price will trade. The tighter
-					your range, the higher your potential returns—but also the higher your risk of going out of range.
-				</p>
+				<div class="article-subsection">
+					<h3 class="article-subsection-title">How Swaps Change Current Liquidity</h3>
+
+					<p class="article-text">
+						In the previous section, we somehow saw how liquidity is stored at different ticks. But which liquidity value does the pool actually use during a swap?
+						The pool tracks two critical state variables:
+					</p>
+
+					<ul class="article-list list-disc">
+						<li><InlinedCode variable="liquidity" color="blue" strong /> - The current active liquidity available for trading</li>
+						<li><InlinedCode variable="tick" color="blue" strong /> (or price) - The current price point of the pool</li>
+					</ul>
+
+					<p class="article-text">
+						When a swap happens, the price moves up or down depending on the swap direction (buying or selling). As the price crosses tick boundaries (a tick that is tick start or tick end when providing liquidity),
+						the <InlinedCode variable="liquidity" color="blue" strong /> value must be updated to reflect the new liquidity depth at the new price level.
+					</p>
+
+					<div class="example-box example-box-purple">
+						<div class="example-box-header">
+							How Liquidity Changes During a Swap
+						</div>
+						<div class="example-box-content">
+							<p class="font-semibold text-slate-900 mb-2">Initial State:</p>
+							<ul class="article-list list-disc">
+								<li>We have the following liquidity distribution</li>
+								<li>Current tick: 600 (price = $2,400)</li>
+								<li>Current liquidity: 500</li>
+							</ul>
+
+							<div class="bg-green-50 p-4 rounded-lg border border-green-200">
+								<div class="font-mono text-sm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 0.5rem;">
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">1</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">499</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">500</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">500</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">501</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">500</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">500</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">624</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">625</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">626</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">749</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">2,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">750</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">2,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">751</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">2,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">2,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: white; border: 1px solid rgb(187, 247, 208); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">874</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">2,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">875</div>
+										<div style="color: rgb(22, 101, 52); font-weight: 600;">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">876</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">1000</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+								</div>
+								<p class="text-sm text-green-800 mt-4">
+									The array shows liquidity at each tick. Ticks with green backgrounds and bold borders (500, 625, 750, 875) are boundary ticks where liquidity changes. Notice how liquidity remains constant between boundaries: 0 before tick 500, then 500 from ticks 500-624, then 2,500 from ticks 625-749, then 2,000 from ticks 750-874, and back to 0 from tick 875 onwards.
+								</p>
+							</div>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">Scenario: Let's trace how liquidity changes during swap</p>
+							<ol class="article-list list-decimal">
+								<li>Swap USDC for ETH. Price increases from tick 600 → 624
+									<ul class="article-list list-disc ml-6">
+										<li>No boundary crossed</li>
+										<li>Liquidity remains: 500</li>
+									</ul>
+								</li>
+								<li>Swap USDC for ETH. Price increases from tick 624 → 700
+									<ul class="article-list list-disc ml-6">
+										<li>Crossed boundary at tick 625</li>
+										<li>New liquidity: 2500</li>
+									</ul>
+								</li>
+								<li>Swap ETH for USDC. Price decreases from tick 700 → 600
+									<ul class="article-list list-disc ml-6">
+										<li>Crossed boundary at tick 625</li>
+										<li>New liquidity: 500</li>
+									</ul>
+								</li>
+								<li>Swap ETH for USDC. Price decreases from tick 600 → 500
+									<ul class="article-list list-disc ml-6">
+										<li>No boundary crossed</li>
+										<li>Liquidity remains: 500</li>
+									</ul>
+								</li>
+								<li>Swap ETH for USDC. Price decreases from tick 500 → 499
+									<ul class="article-list list-disc ml-6">
+										<li>Crossed boundary at tick 500</li>
+										<li>New liquidity: 0, swap failed</li>
+									</ul>
+								</li>
+							</ol>
+						</div>
+					</div>
+
+				</div>
 			</section>
 
-			<!-- Best Practices -->
 			<section class="article-section">
-				<h2 class="article-section-title">Best Practices for Tick Selection</h2>
+				<h2 class="article-section-title">Tick Management in Action</h2>
+
 				<p class="article-text">
-					When choosing ticks for your liquidity position, consider these guidelines:
+					Now that we understand how ticks work conceptually, let's walk through a realistic sequence of operations in an <InlinedCode variable="ETH/USDC" color="gray" strong /> pool.
+					We'll examine exactly how adding liquidity, removing liquidity, and swapping affect the pool's current tick and current liquidity.
+					For clarity, we'll continue using our simplified model where <strong>price = 4 × tick</strong>.
 				</p>
-				<ul class="article-list list-disc">
-					<li>
-						<strong>Respect tick spacing:</strong> Ensure your tickLower and tickUpper are multiples
-						of the pool's tick spacing, or your transaction will fail.
-					</li>
-					<li>
-						<strong>Consider volatility:</strong> More volatile pairs need wider ranges. Stablecoin
-						pairs (USDC/USDT) can use very tight ranges, while ETH/altcoin pairs need wider ranges.
-					</li>
-					<li>
-						<strong>Monitor your position:</strong> Set up alerts for when the price approaches your
-						range boundaries. You may need to rebalance or create new positions.
-					</li>
-					<li>
-						<strong>Factor in gas costs:</strong> Frequent rebalancing on Ethereum mainnet can be
-						expensive. Consider Layer 2 solutions like Arbitrum or Optimism for active strategies.
-					</li>
-					<li>
-						<strong>Use fee tier wisely:</strong> Higher fee tiers (1%) compensate for higher volatility
-						and impermanent loss risk. Stable pairs should use 0.05% tier.
-					</li>
-				</ul>
+
+				<div class="example-box example-box-indigo">
+					<div class="example-box-header">
+						Initial Pool State
+					</div>
+					<div class="example-box-content">
+						<p class="article-text">
+							Let's start with an empty ETH/USDC pool and build it up step by step:
+						</p>
+						<ul class="article-list list-disc">
+							<li>Current tick: 500 (price = $2,000)</li>
+							<li>Current liquidity: 0 (pool is empty)</li>
+							<li>No liquidity positions exist yet</li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="article-subsection">
+					<h3 class="article-subsection-title">Operation 1: Add Liquidity</h3>
+
+					<div class="example-box example-box-purple">
+						<div class="example-box-header">
+							Add Liquidity Operation
+						</div>
+						<div class="example-box-content">
+							<p class="font-semibold text-slate-900 mb-2">Action:</p>
+							<p class="article-text">
+								Adds 1,000 liquidity in range [$2,000, $3,000) → ticks [500, 750)
+							</p>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">What happens:</p>
+							<ol class="article-list list-decimal">
+								<li>Update tick 500: liquidityNet += 1,000</li>
+								<li>Update tick 750: liquidityNet -= 1,000</li>
+								<li>Since current tick (500) is within range, update current liquidity</li>
+							</ol>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">Pool state after:</p>
+							<ul class="article-list list-disc">
+								<li>Current tick: 500 (unchanged - adding liquidity doesn't move price)</li>
+								<li>Current liquidity: 0 + 1,000 = 1,000</li>
+							</ul>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">liquidityNet Array (shows deltas at boundaries):</p>
+							<div class="bg-purple-50 p-4 rounded-lg border border-purple-200 mt-2">
+								<div class="font-mono text-sm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 0.5rem;">
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">1</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">500</div>
+										<div style="color: rgb(22, 163, 74); font-weight: 600;">+1,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">750</div>
+										<div style="color: rgb(220, 38, 38); font-weight: 600;">-1,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">1000</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+								</div>
+								<p class="text-sm text-purple-800 mt-3">
+									Only boundaries have non-zero values: tick 500 gets +1,000 (range start) and tick 750 gets -1,000 (range end).
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="article-subsection">
+					<h3 class="article-subsection-title">Operation 2: Swap USDC for ETH</h3>
+
+					<div class="example-box example-box-green">
+						<div class="example-box-header">
+							Swap Operation (Price Increases)
+						</div>
+						<div class="example-box-content">
+							<p class="font-semibold text-slate-900 mb-2">Action:</p>
+							<p class="article-text">
+								Swap USDC for ETH, pushing price from $2,000 to $2,600
+							</p>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">What happens:</p>
+							<ol class="article-list list-decimal">
+								<li>Price moves from tick 500 → tick 650</li>
+								<li>No tick boundaries crossed (still within [500, 750))</li>
+								<li>Current liquidity stays the same</li>
+							</ol>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">Pool state after:</p>
+							<ul class="article-list list-disc">
+								<li>Current tick: 500 → <strong>650</strong> (price moved)</li>
+								<li>Current liquidity: 1,000 (unchanged - no boundary crossed)</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+				<div class="article-subsection">
+					<h3 class="article-subsection-title">Operation 3: Add More Liquidity</h3>
+
+					<div class="example-box example-box-purple">
+						<div class="example-box-header">
+							Add Liquidity Operation
+						</div>
+						<div class="example-box-content">
+							<p class="font-semibold text-slate-900 mb-2">Action:</p>
+							<p class="article-text">
+								Add 2,000 liquidity in range [$2,500, $3,500) → ticks [625, 875)
+							</p>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">What happens:</p>
+							<ol class="article-list list-decimal">
+								<li>Update tick 625: liquidityNet += 2,000</li>
+								<li>Update tick 875: liquidityNet -= 2,000</li>
+								<li>Current tick (650) is within the new range [625, 875), so update current liquidity</li>
+							</ol>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">Pool state after:</p>
+							<ul class="article-list list-disc">
+								<li>Current tick: 650 (unchanged)</li>
+								<li>Current liquidity: 1,000 + 2,000 = <strong>3,000</strong></li>
+							</ul>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">liquidityNet Array (shows deltas at boundaries):</p>
+							<div class="bg-purple-50 p-4 rounded-lg border border-purple-200 mt-2">
+								<div class="font-mono text-sm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 0.5rem;">
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">1</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">500</div>
+										<div style="color: rgb(22, 163, 74); font-weight: 600;">+1,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">625</div>
+										<div style="color: rgb(22, 163, 74); font-weight: 600;">+2,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">750</div>
+										<div style="color: rgb(220, 38, 38); font-weight: 600;">-1,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">875</div>
+										<div style="color: rgb(220, 38, 38); font-weight: 600;">-2,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+								</div>
+								<p class="text-sm text-purple-800 mt-3">
+									First position: +1,000 at tick 500, -1,000 at tick 750. Second position: +2,000 at tick 625, -2,000 at tick 875. All non-boundary ticks remain 0.
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="article-subsection">
+					<h3 class="article-subsection-title">Operation 4: Swap ETH for USDC (Crosses Boundary)</h3>
+
+					<div class="example-box example-box-green">
+						<div class="example-box-header">
+							Swap Operation (Price Decreases, Crosses Tick)
+						</div>
+						<div class="example-box-content">
+							<p class="font-semibold text-slate-900 mb-2">Action:</p>
+							<p class="article-text">
+								Swap ETH for USDC, pushing price from $2,600 down to $2,400
+							</p>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">What happens:</p>
+							<ol class="article-list list-decimal">
+								<li>Price moves from tick 650 → tick 600</li>
+								<li><strong>Crosses tick boundary 625</strong> (going left/down)</li>
+								<li>When crossing tick 625 going left, apply liquidityNet[625] = +2,000</li>
+								<li>Current liquidity: 3,000 - 2,000 = 1,000</li>
+							</ol>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">Pool state after:</p>
+							<ul class="article-list list-disc">
+								<li>Current tick: 650 → <strong>600</strong> (price decreased)</li>
+								<li>Current liquidity: 3,000 → <strong>1,000</strong> (crossed boundary at 625)</li>
+							</ul>
+
+							<p class="text-sm text-green-800 mt-3">
+								<strong>Key insight:</strong> When price crosses a boundary moving left (price decreasing), we subtract the liquidityNet value because we're leaving that range.
+							</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="article-subsection">
+					<h3 class="article-subsection-title">Operation 5: Add Liquidity Out of Range</h3>
+
+					<div class="example-box example-box-purple">
+						<div class="example-box-header">
+							Add Liquidity (Out of Range)
+						</div>
+						<div class="example-box-content">
+							<p class="font-semibold text-slate-900 mb-2">Action:</p>
+							<p class="article-text">
+								Add 1,500 liquidity in range [$3,600, $4,000) → ticks [900, 1000)
+							</p>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">What happens:</p>
+							<ol class="article-list list-decimal">
+								<li>Update tick 900: liquidityNet += 1,500</li>
+								<li>Update tick 1000: liquidityNet -= 1,500</li>
+								<li>Current tick (600) is <strong>outside</strong> this range, so current liquidity stays unchanged</li>
+							</ol>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">Pool state after:</p>
+							<ul class="article-list list-disc">
+								<li>Current tick: 600 (unchanged)</li>
+								<li>Current liquidity: 1,000 (unchanged - position is out of range)</li>
+							</ul>
+
+							<p class="text-sm text-purple-800 mt-3">
+								<strong>Key insight:</strong> Adding liquidity outside the current price range doesn't affect current liquidity. This liquidity will only become active when the price moves into that range.
+							</p>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">liquidityNet Array (shows deltas at boundaries):</p>
+							<div class="bg-purple-50 p-4 rounded-lg border border-purple-200 mt-2">
+								<div class="font-mono text-sm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 0.5rem;">
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">1</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">500</div>
+										<div style="color: rgb(22, 163, 74); font-weight: 600;">+1,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">625</div>
+										<div style="color: rgb(22, 163, 74); font-weight: 600;">+2,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">750</div>
+										<div style="color: rgb(220, 38, 38); font-weight: 600;">-1,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">875</div>
+										<div style="color: rgb(220, 38, 38); font-weight: 600;">-2,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">900</div>
+										<div style="color: rgb(22, 163, 74); font-weight: 600;">+1,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">1000</div>
+										<div style="color: rgb(220, 38, 38); font-weight: 600;">-1,500</div>
+									</div>
+								</div>
+								<p class="text-sm text-purple-800 mt-3">
+									Now we have three positions: +1,000 at tick 500/-1,000 at tick 750, +2,000 at tick 625/-2,000 at tick 875, and +1,500 at tick 900/-1,500 at tick 1000. The new position at [900, 1000) doesn't affect current liquidity since current tick is 600.
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="article-subsection">
+					<h3 class="article-subsection-title">Operation 6: Remove Partial Liquidity</h3>
+
+					<div class="example-box example-box-purple">
+						<div class="example-box-header">
+							Remove Liquidity (Partial)
+						</div>
+						<div class="example-box-content">
+							<p class="font-semibold text-slate-900 mb-2">Action:</p>
+							<p class="article-text">
+								Remove 400 liquidity from range [$2,000, $3,000) → ticks [500, 750)
+							</p>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">What happens:</p>
+							<ol class="article-list list-decimal">
+								<li>Update tick 500: liquidityNet -= 400 (from +1,000 to +600)</li>
+								<li>Update tick 750: liquidityNet += 400 (from -1,000 to -600)</li>
+								<li>Current tick (600) is within this range, so update current liquidity</li>
+							</ol>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">Pool state after:</p>
+							<ul class="article-list list-disc">
+								<li>Current tick: 600 (unchanged)</li>
+								<li>Current liquidity: 1,000 - 400 = <strong>600</strong></li>
+							</ul>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">Final liquidityNet Array (shows deltas at boundaries):</p>
+							<div class="bg-purple-50 p-4 rounded-lg border border-purple-200 mt-2">
+								<div class="font-mono text-sm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 0.5rem;">
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">1</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">500</div>
+										<div style="color: rgb(22, 163, 74); font-weight: 600;">+600</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">625</div>
+										<div style="color: rgb(22, 163, 74); font-weight: 600;">+2,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">750</div>
+										<div style="color: rgb(220, 38, 38); font-weight: 600;">-600</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">875</div>
+										<div style="color: rgb(220, 38, 38); font-weight: 600;">-2,000</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">900</div>
+										<div style="color: rgb(22, 163, 74); font-weight: 600;">+1,500</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(248, 250, 252); border: 1px solid rgb(226, 232, 240); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">...</div>
+										<div style="color: rgb(148, 163, 184);">0</div>
+									</div>
+									<div style="padding: 0.5rem; background: rgb(220, 252, 231); border: 2px solid rgb(22, 163, 74); border-radius: 0.25rem; text-align: center;">
+										<div style="color: rgb(100, 116, 139); font-size: 0.75rem; margin-bottom: 0.25rem;">1000</div>
+										<div style="color: rgb(220, 38, 38); font-weight: 600;">-1,500</div>
+									</div>
+								</div>
+								<p class="text-sm text-purple-800 mt-3">
+									After partial removal, the first position has reduced deltas: +600 at tick 500 and -600 at tick 750. The other positions remain unchanged. At current tick 600, the active liquidity is 600 from the partially removed position.
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="article-subsection">
+					<h3 class="article-subsection-title">Operation 7: Swap Crossing Boundary (Price Increase)</h3>
+
+					<div class="example-box example-box-green">
+						<div class="example-box-header">
+							Swap Operation (Price Increases, Crosses Tick)
+						</div>
+						<div class="example-box-content">
+							<p class="font-semibold text-slate-900 mb-2">Action:</p>
+							<p class="article-text">
+								Swap USDC for ETH, pushing price from $2,400 to $2,800
+							</p>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">What happens:</p>
+							<ol class="article-list list-decimal">
+								<li>Price moves from tick 600 → tick 700</li>
+								<li><strong>Crosses tick boundary 625</strong> (going right/up)</li>
+								<li>When crossing tick 625 going right, apply liquidityNet[625] = +2,000</li>
+								<li>Current liquidity: 600 + 2,000 = 2,600</li>
+							</ol>
+
+							<p class="font-semibold text-slate-900 mt-4 mb-2">Pool state after:</p>
+							<ul class="article-list list-disc">
+								<li>Current tick: 600 → <strong>700</strong> (price increased)</li>
+								<li>Current liquidity: 600 → <strong>2,600</strong> (crossed boundary at 625)</li>
+							</ul>
+
+							<p class="text-sm text-green-800 mt-3">
+								<strong>Key insight:</strong> When price crosses a boundary moving right (price increasing), we add the liquidityNet value because we're entering that range. Now at tick 700, both the first position [500, 750) and second position [625, 875) are active, providing combined liquidity of 600 + 2,000 = 2,600.
+							</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="bg-indigo-50 p-4 rounded-lg border border-indigo-200 my-6">
+					<p class="font-semibold text-indigo-900 mb-2">Summary of Operations</p>
+					<ul class="article-list list-disc text-indigo-800">
+						<li><strong>Adding liquidity:</strong> Updates liquidityNet at boundaries, increases current liquidity if position includes current tick</li>
+						<li><strong>Removing liquidity:</strong> Updates liquidityNet at boundaries, decreases current liquidity if position includes current tick</li>
+						<li><strong>Swapping:</strong> Moves current tick (price), updates current liquidity only when crossing tick boundaries</li>
+					</ul>
+
+					<p class="font-semibold text-indigo-900 mt-4 mb-2">Important Notes:</p>
+					<ul class="article-list list-disc text-indigo-800">
+						<li><strong>Add/Remove operations are immediate:</strong> When adding or removing liquidity, the liquidityNet updates at boundaries take effect immediately, and current liquidity is updated if the current tick falls within the position's range.</li>
+						<li><strong>Swap optimization in practice:</strong> In the examples above, we showed swaps crossing boundaries tick by tick for educational clarity. However, in the actual Uniswap V3 implementation, the swap algorithm is optimized—it doesn't iterate through every tick. Instead, it finds the next <em>initialized tick</em> (a tick with non-zero liquidityNet), performs the swap calculation between those initialized ticks, then updates the current liquidity only when crossing an initialized boundary. This makes swaps extremely gas-efficient even with thousands of potential ticks.</li>
+					</ul>
+				</div>
+
 			</section>
 
 			<!-- Conclusion -->
 			<section class="highlighted-section">
 				<h2 class="article-section-title">Conclusion</h2>
 				<p class="article-text">
-					Uniswap V3's tick system transforms AMM liquidity provision from a passive to an active strategy.
-					By understanding how ticks work, how to calculate prices, and how to choose appropriate ranges,
-					you can significantly improve your capital efficiency as a liquidity provider.
+					Uniswap V3's tick system transforms AMM liquidity provision from a passive strategy into an active one.
+					By understanding how ticks work, how prices are calculated, and how to choose appropriate ranges,
+					liquidity providers can significantly improve their capital efficiency.
 				</p>
 				<p class="article-text">
 					The key concepts to remember:
@@ -414,9 +1205,9 @@
 				<ul class="article-list list-disc">
 					<li>Ticks are discrete price points where liquidity can be placed</li>
 					<li>Each tick represents approximately a 0.01% price change (1.0001^tick)</li>
-					<li>Tick spacing varies by fee tier to balance gas costs and precision</li>
-					<li>Concentrated liquidity allows up to 4000x capital efficiency compared to V2</li>
-					<li>Active management is required to maintain positions in range</li>
+					<li>The tick system uses the difference array technique for O(1) liquidity updates</li>
+					<li>Concentrated liquidity allows significantly higher capital efficiency compared to V2</li>
+					<li>Active management is required to maintain positions within range</li>
 				</ul>
 				<p class="article-text">
 					While V3 offers tremendous advantages, it also requires more sophistication from liquidity providers.

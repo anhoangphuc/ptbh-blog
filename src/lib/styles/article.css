@@ -73,6 +73,18 @@
 	margin-bottom: 1rem;
 }
 
+.article-subsection {
+	margin-bottom: 2rem;
+}
+
+.article-subsection-title {
+	font-family: 'Playfair Display', serif;
+	font-size: 1.5rem;
+	font-weight: 600;
+	color: rgb(30, 41, 59);
+	margin-bottom: 0.75rem;
+}
+
 .article-text {
 	margin-bottom: 1rem;
 	line-height: 1.75;
@@ -290,4 +302,58 @@
 
 .article-list.decimal {
 	list-style-type: decimal;
+}
+
+/* Example Box - Reusable component for showing examples */
+.example-box {
+	margin: 2rem 0;
+	border-radius: 0.75rem;
+	overflow: hidden;
+	background-color: white;
+	border: 1px solid rgb(226, 232, 240);
+	box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.example-box-header {
+	padding: 1rem 1.5rem;
+	font-family: 'Playfair Display', serif;
+	font-size: 1.125rem;
+	font-weight: 700;
+	color: rgb(15, 23, 42);
+	border-bottom: 1px solid rgb(226, 232, 240);
+}
+
+.example-box-content {
+	padding: 1.5rem;
+}
+
+/* Example Box Color Variants */
+.example-box-blue .example-box-header {
+	background: linear-gradient(to right, rgb(239, 246, 255), rgb(219, 234, 254));
+	color: rgb(30, 58, 138);
+	border-bottom-color: rgb(191, 219, 254);
+}
+
+.example-box-purple .example-box-header {
+	background: linear-gradient(to right, rgb(250, 245, 255), rgb(243, 232, 255));
+	color: rgb(88, 28, 135);
+	border-bottom-color: rgb(233, 213, 255);
+}
+
+.example-box-green .example-box-header {
+	background: linear-gradient(to right, rgb(240, 253, 244), rgb(220, 252, 231));
+	color: rgb(22, 101, 52);
+	border-bottom-color: rgb(187, 247, 208);
+}
+
+.example-box-indigo .example-box-header {
+	background: linear-gradient(to right, rgb(238, 242, 255), rgb(224, 231, 255));
+	color: rgb(55, 48, 163);
+	border-bottom-color: rgb(199, 210, 254);
+}
+
+.example-box-pink .example-box-header {
+	background: linear-gradient(to right, rgb(253, 242, 248), rgb(252, 231, 243));
+	color: rgb(157, 23, 77);
+	border-bottom-color: rgb(251, 207, 232);
 }
