@@ -743,8 +743,8 @@
 						</p>
 						<ul class="article-list list-disc">
 							<li>Current tick: 500 (price = $2,000)</li>
-							<li>Current liquidity: 0 (pool is empty)</li>
 							<li>No liquidity positions exist yet</li>
+							<li>Current liquidity: 0 (pool is empty)</li>
 						</ul>
 					</div>
 				</div>
@@ -1192,27 +1192,26 @@
 			</section>
 
 			<!-- Conclusion -->
-			<section class="highlighted-section">
+			<section class="article-section">
 				<h2 class="article-section-title">Conclusion</h2>
 				<p class="article-text">
-					Uniswap V3's tick system transforms AMM liquidity provision from a passive strategy into an active one.
-					By understanding how ticks work, how prices are calculated, and how to choose appropriate ranges,
-					liquidity providers can significantly improve their capital efficiency.
+					In this article, we explored Uniswap V3's tick system from a conceptual perspective, breaking down what seemed like a complex topic into understandable pieces. By using a simplified model (price = 4 × tick) and relating the tick system to the familiar difference array technique, we've seen how Uniswap V3 achieves efficient liquidity management.
 				</p>
 				<p class="article-text">
-					The key concepts to remember:
+					The key concepts we covered:
 				</p>
 				<ul class="article-list list-disc">
-					<li>Ticks are discrete price points where liquidity can be placed</li>
-					<li>Each tick represents approximately a 0.01% price change (1.0001^tick)</li>
-					<li>The tick system uses the difference array technique for O(1) liquidity updates</li>
-					<li>Concentrated liquidity allows significantly higher capital efficiency compared to V2</li>
-					<li>Active management is required to maintain positions within range</li>
+					<li>The difference array technique as the algorithmic foundation for efficient range updates</li>
+					<li>Ticks as discrete price points where liquidity changes occur</li>
+					<li>How concentrated liquidity allows capital to be focused within specific price ranges</li>
+					<li>How swaps interact with ticks and update current liquidity when crossing boundaries</li>
+					<li>The mechanics of adding, removing liquidity and how it affects the tick system</li>
 				</ul>
 				<p class="article-text">
-					While V3 offers tremendous advantages, it also requires more sophistication from liquidity providers.
-					Start with wider ranges and conservative positions as you learn, then optimize as you gain experience
-					with tick management and price prediction.
+					Understanding these fundamentals provides a solid foundation for working with Uniswap V3. However, this conceptual overview is just the beginning. In a follow-up article, we'll dive into the implementation details—exploring the actual mathematical formulas for tick-to-price conversion, the data structures used in the smart contracts, gas optimization techniques, and how to interact with the protocol programmatically.
+				</p>
+				<p class="article-text">
+					For now, I hope this gentle introduction has demystified the tick system and made Uniswap V3 more approachable. The conceptual understanding you've gained here will serve as a strong foundation when you're ready to explore the technical implementation.
 				</p>
 			</section>
 		</div>
