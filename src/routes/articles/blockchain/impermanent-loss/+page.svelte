@@ -112,7 +112,7 @@
 				<div class="article-subsection">
 					<h3 class="article-subsection-title">Quick Refresher</h3>
 					<p class="article-text">
-						Suppose ETH is currently priced at $2,000 USDC. You have 2 ETH and 4,000 USDC. Instead
+						Suppose ETH is currently priced at $2,000 USDC. You have ETH and USDC. Instead
 						of letting your assets sit idle, you decide to provide them as liquidity to an <InlinedCode
 							variable="ETH/USDC"
 							color="blue"
@@ -124,8 +124,10 @@
 						After some time, you withdraw your assets from the pool and compare the value to if you
 						had simply held your original tokens. You realize that the holding strategy would have
 						given you more value. This difference is impermanent loss. Even if your pool position
-						increased in value, you still "lost" compared to just holding. When you provide
-						liquidity, you're exposed to IL, and sometimes the trading fees you earn don't cover the
+						increased in value, you still "lost" compared to just holding. 
+					</p>
+					<p class="article-text">
+						When you provide liquidity, you're exposed to <InlinedCode variable="IL" color="blue" strong />, and sometimes the trading fees you earn don't cover the
 						impermanent loss you've incurred, resulting in a net loss.
 					</p>
 				</div>
@@ -161,7 +163,7 @@
 							<ul class="article-list list-disc">
 								<li>Pool has 10 ETH and 20,000 USDC</li>
 								<li>Current price: 1 ETH = 2,000 USDC (both in pool and market)</li>
-								<li>Current liquidity: 40,000</li>
+								<li>Liquidity constant (k): 10 × 20,000 = 200,000</li>
 							</ul>
 
 							<p class="mt-4 mb-2 font-semibold text-slate-900">
@@ -173,9 +175,9 @@
 									<strong>Arbitrageur sees the opportunity:</strong>
 									<ul class="article-list mt-1 ml-4 list-disc">
 										<li>Buys 0.871 ETH from the pool, paying 1,910 USDC</li>
-										<li>Pool now has ~9.129 ETH and ~21,910 USDC, ensure the price is $2,400 and liquidity still 40,000</li>
 										<li>Sells 0.871 ETH on Binance at $2,400 = $2,090.4</li>
 										<li><strong class="text-blue-700">Arbitrageur profit: $2,090.4 - $1,910 = $180.4</strong></li>
+										<li>After arbitrage: Pool has ~9.129 ETH and ~21,910 USDC (price now $2,400, liquidity constant at 200,000)</li>
 									</ul>
 								</li>
 							</ol>
@@ -190,8 +192,8 @@
 									<ul class="article-list mt-1 ml-4 list-disc">
 										<li>Buys 0.871 ETH from exchanges at $2,000 = $1,742</li>
 										<li>Sells 0.871 ETH to the pool, receiving 1,910 USDC</li>
-										<li>Pool now has 10 ETH and 20,000 USDC, ensure the price is $2,000 and liquidity still 40,000</li>
 										<li><strong class="text-blue-700">Arbitrageur profit: $1,910 - $1,742 = $168</strong></li>
+										<li>After arbitrage: Pool has 10 ETH and 20,000 USDC (price restored to $2,000, liquidity constant at 200,000)</li>
 									</ul>
 								</li>
 							</ol>
@@ -205,13 +207,13 @@
 										<span class="font-bold text-red-700">$348.4</span>
 									</li>
 									<li>
-										<strong>Liquidity provider position:</strong> Back to the original 10 ETH and 20,000 USDC (impermanent loss = 0%, lose nothing)
+										<strong>Liquidity provider position:</strong> Restored to the original 10 ETH and 20,000 USDC (impermanent loss = 0%)
 									</li>
 									<li class="pt-2 border-t border-slate-300">
-										<strong class="text-blue-900">The key insight:</strong> If the liquidity provider had instead actively traded by selling 0.871 ETH at $2,400 and buying it back at $2,000, they would have earned 0.871 × ($2,400 - $2,000) = <strong class="text-green-700">$348.4</strong>
+										<strong class="text-blue-900">The key insight:</strong> If the liquidity provider had instead actively traded—selling 0.871 ETH at $2,400 and buying it back at $2,000—they would have earned 0.871 × ($2,400 - $2,000) = <strong class="text-green-700">$348.4</strong>
 									</li>
 									<li class="text-sm italic text-slate-700">
-										This $348.4 is exactly what the arbitrageurs captured from the pool! By passively providing liquidity, you give up the opportunity to profit from price movements.
+										This $348.4 is exactly what the arbitrageurs captured from the pool! By passively providing liquidity, you give up the opportunity cost of profiting from price movements.
 									</li>
 								</ul>
 							</div>
@@ -223,12 +225,12 @@
 
 			<!-- Why Does It Happen -->
 			<section class="article-section">
-				<h2 class="article-section-title">Examples in reality</h2>
+				<h2 class="article-section-title">Real-World Examples</h2>
 
 				<p class="article-text">
-					Let's look at 4 real examples showing exactly how much you lose from impermanent loss. In
+					Let's examine four concrete examples showing exactly how much you lose from impermanent loss. In
 					all cases, we start with the same position: 1 ETH + 2,000 USDC when ETH = $2,000 (total
-					value $4,000).
+					value $4,000). We'll see how IL varies based on the magnitude of price changes.
 				</p>
 
 				<div class="mt-6 overflow-x-auto">
@@ -395,12 +397,12 @@
 							<strong>Large price changes (±50% or more):</strong> IL becomes significant (~5.7%+)
 						</li>
 						<li>
-							<strong>Always a loss:</strong> You always lose compared to simply holding, regardless of
+							<strong>Always underperforms holding:</strong> You always earn less than simply holding, regardless of
 							price direction
 						</li>
 						<li>
-							<strong>Still profitable in bull markets:</strong> Even with IL, your pool value increases
-							when prices rise—you just earn less than holding
+							<strong>Can still be profitable:</strong> Even with IL, your pool value can increase
+							when prices rise—you just earn less than you would have by holding
 						</li>
 					</ul>
 				</div>
@@ -411,17 +413,17 @@
 				<h2 class="article-section-title">The Mathematics of Impermanent Loss</h2>
 
 				<p class="article-text">
-					Now let's derive the exact mathematical formula that determines how much you lose from
-					impermanent loss for any given price change. This will give you a precise tool to
-					calculate your risk.
+					Now let's derive the exact mathematical formula that determines impermanent loss for
+					any given price change. This derivation will give you a precise tool to
+					calculate your risk before providing liquidity.
 				</p>
 
 				<div class="article-subsection">
 					<h3 class="article-subsection-title">The Constant Product Formula</h3>
 					<p class="article-text">
-						At the heart of AMMs like Uniswap is the constant product formula. This formula ensures
-						that the product of the reserves of two tokens remains constant before and after any
-						trade:
+						At the heart of AMMs like Uniswap lies the constant product formula. This invariant ensures
+						that the product of the two token reserves remains constant before and after any
+						trade (excluding fees):
 					</p>
 
 					<div
@@ -462,8 +464,8 @@
 					</div>
 
 					<p class="article-text">
-						This invariant is what makes AMMs work—no matter how much trading occurs, the product of
-						the reserves stays constant (ignoring fees for simplicity).
+						This invariant is the foundation of how AMMs function—no matter how much trading occurs, the product
+						<span class="math-inline">k</span> remains constant (we ignore fees for simplicity in this derivation).
 					</p>
 				</div>
 
