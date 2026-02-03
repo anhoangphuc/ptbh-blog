@@ -48,9 +48,10 @@
 	};
 </script>
 
-<div class="my-8 overflow-hidden rounded-xl bg-white border border-slate-200 shadow-lg">
+<div class="my-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
 	<div
-		class="border-b border-slate-200 px-6 py-4 {gradientFrom === 'blue-50' && gradientTo === 'indigo-50'
+		class="border-b border-slate-200 px-6 py-4 {gradientFrom === 'blue-50' &&
+		gradientTo === 'indigo-50'
 			? 'bg-gradient-to-r from-blue-50 to-indigo-50'
 			: 'bg-gradient-to-r from-purple-50 to-pink-50'}"
 	>
@@ -59,14 +60,12 @@
 		</h3>
 	</div>
 	<div class="px-6 py-4">
-		<p class="font-semibold text-slate-900 mb-3">Operations:</p>
-		<ol class="list-decimal list-inside space-y-2 text-sm mb-6">
+		<p class="mb-3 font-semibold text-slate-900">Operations:</p>
+		<ol class="mb-6 list-inside list-decimal space-y-2 text-sm">
 			{#each operations as op}
 				<li>
 					{op.description}:
-					<span class="font-mono text-purple-700"
-						>[{op.lowerBound}, {op.upperBound})</span
-					>
+					<span class="font-mono text-purple-700">[{op.lowerBound}, {op.upperBound})</span>
 					{#if op.value > 0}
 						<span class="text-green-700">+{op.value}</span>
 					{:else}
@@ -76,18 +75,20 @@
 			{/each}
 		</ol>
 
-		<div class="bg-slate-50 p-4 rounded-lg mb-4">
-			<p class="font-semibold text-slate-900 mb-3">Delta Array (boundary changes):</p>
-			<p class="text-sm text-slate-600 mb-3">Only store what changes at each boundary:</p>
-			<div class="grid grid-cols-10 gap-1 text-xs font-mono mb-3">
+		<div class="mb-4 rounded-lg bg-slate-50 p-4">
+			<p class="mb-3 font-semibold text-slate-900">Delta Array (boundary changes):</p>
+			<p class="mb-3 text-sm text-slate-600">Only store what changes at each boundary:</p>
+			<div class="mb-3 grid grid-cols-10 gap-1 font-mono text-xs">
 				{#each deltaArray as delta, i}
 					<div
-						class="p-2 rounded text-center {delta !== 0
-							? 'bg-purple-100 border border-purple-300 font-semibold'
-							: 'bg-white border border-slate-200'}"
+						class="rounded p-2 text-center {delta !== 0
+							? 'border border-purple-300 bg-purple-100 font-semibold'
+							: 'border border-slate-200 bg-white'}"
 					>
 						<div class="text-slate-500">[{i}]</div>
-						<div class={delta > 0 ? 'text-green-700' : delta < 0 ? 'text-red-700' : 'text-slate-400'}>
+						<div
+							class={delta > 0 ? 'text-green-700' : delta < 0 ? 'text-red-700' : 'text-slate-400'}
+						>
 							{formatDelta(delta)}
 						</div>
 					</div>
@@ -98,17 +99,17 @@
 			</p>
 		</div>
 
-		<div class="bg-green-50 p-4 rounded-lg border border-green-200">
-			<p class="font-semibold text-green-900 mb-3">Final Array (accumulated values):</p>
-			<p class="text-sm text-green-700 mb-3">
+		<div class="rounded-lg border border-green-200 bg-green-50 p-4">
+			<p class="mb-3 font-semibold text-green-900">Final Array (accumulated values):</p>
+			<p class="mb-3 text-sm text-green-700">
 				Accumulate deltas from left to right to get actual values:
 			</p>
-			<div class="grid grid-cols-10 gap-1 text-xs font-mono mb-3">
+			<div class="mb-3 grid grid-cols-10 gap-1 font-mono text-xs">
 				{#each finalArray as value, i}
 					<div
-						class="p-2 rounded text-center {value !== 0
-							? 'bg-green-100 border border-green-300 font-semibold text-green-800'
-							: 'bg-white border border-slate-200 text-slate-400'}"
+						class="rounded p-2 text-center {value !== 0
+							? 'border border-green-300 bg-green-100 font-semibold text-green-800'
+							: 'border border-slate-200 bg-white text-slate-400'}"
 					>
 						<div class="text-slate-500">[{i}]</div>
 						<div>{value}</div>

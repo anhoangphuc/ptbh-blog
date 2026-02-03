@@ -18,7 +18,10 @@
 
 <svelte:head>
 	<title>All Articles - PTBH Blog</title>
-	<meta name="description" content="Browse all technical articles across blockchain, algorithms, and software engineering" />
+	<meta
+		name="description"
+		content="Browse all technical articles across blockchain, algorithms, and software engineering"
+	/>
 </svelte:head>
 
 <div class="article-container">
@@ -109,11 +112,49 @@
 		{:else}
 			<div class="empty-state">
 				<div class="empty-state-icon">
-					<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<rect x="8" y="12" width="48" height="40" rx="4" stroke="currentColor" stroke-width="2" />
-						<line x1="16" y1="24" x2="48" y2="24" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-						<line x1="16" y1="32" x2="40" y2="32" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-						<line x1="16" y1="40" x2="44" y2="40" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+					<svg
+						width="64"
+						height="64"
+						viewBox="0 0 64 64"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<rect
+							x="8"
+							y="12"
+							width="48"
+							height="40"
+							rx="4"
+							stroke="currentColor"
+							stroke-width="2"
+						/>
+						<line
+							x1="16"
+							y1="24"
+							x2="48"
+							y2="24"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+						/>
+						<line
+							x1="16"
+							y1="32"
+							x2="40"
+							y2="32"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+						/>
+						<line
+							x1="16"
+							y1="40"
+							x2="44"
+							y2="40"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+						/>
 					</svg>
 				</div>
 				<h3 class="empty-state-title">No Articles Yet</h3>
@@ -134,7 +175,9 @@
 		padding: 1.5rem;
 		background: white;
 		border-radius: 0.75rem;
-		box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+		box-shadow:
+			0 1px 3px 0 rgba(0, 0, 0, 0.1),
+			0 1px 2px 0 rgba(0, 0, 0, 0.06);
 	}
 
 	.category-stat-item {

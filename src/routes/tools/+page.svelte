@@ -86,10 +86,29 @@
 		{:else}
 			<div class="empty-state">
 				<div class="empty-state-icon">
-					<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<rect x="12" y="8" width="40" height="48" rx="4" stroke="currentColor" stroke-width="2" />
+					<svg
+						width="64"
+						height="64"
+						viewBox="0 0 64 64"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<rect
+							x="12"
+							y="8"
+							width="40"
+							height="48"
+							rx="4"
+							stroke="currentColor"
+							stroke-width="2"
+						/>
 						<circle cx="32" cy="24" r="6" stroke="currentColor" stroke-width="2" />
-						<path d="M22 44C22 38.4772 26.4772 34 32 34C37.5228 34 42 38.4772 42 44" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+						<path
+							d="M22 44C22 38.4772 26.4772 34 32 34C37.5228 34 42 38.4772 42 44"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+						/>
 					</svg>
 				</div>
 				<h3 class="empty-state-title">No Tools Yet</h3>

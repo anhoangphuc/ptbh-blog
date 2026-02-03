@@ -91,7 +91,13 @@
 
 <!-- Overlay to close dropdown when clicking outside -->
 {#if isArticlesOpen}
-	<div class="dropdown-overlay" onclick={closeDropdown} role="button" tabindex="-1" aria-label="Close dropdown"></div>
+	<div
+		class="dropdown-overlay"
+		onclick={closeDropdown}
+		role="button"
+		tabindex="-1"
+		aria-label="Close dropdown"
+	></div>
 {/if}
 
 <style>
@@ -248,7 +254,9 @@
 		background: white;
 		border-radius: 0.75rem;
 		border: 1px solid rgb(226, 232, 240);
-		box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+		box-shadow:
+			0 10px 25px -5px rgba(0, 0, 0, 0.1),
+			0 10px 10px -5px rgba(0, 0, 0, 0.04);
 		animation: dropdownSlide 0.2s ease-out;
 	}
 

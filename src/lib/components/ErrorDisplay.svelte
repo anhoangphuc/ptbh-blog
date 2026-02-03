@@ -7,13 +7,7 @@
 		message: string;
 	}
 
-	let {
-		title = 'Error',
-		account,
-		errorCode,
-		errorNumber,
-		message
-	}: Props = $props();
+	let { title = 'Error', account, errorCode, errorNumber, message }: Props = $props();
 </script>
 
 <div class="my-6 overflow-hidden rounded-lg border-l-4 border-red-500 bg-red-50">
@@ -29,24 +23,24 @@
 				<div class="mt-3 space-y-2 font-mono text-sm text-red-800">
 					{#if account}
 						<div class="flex">
-							<span class="font-semibold min-w-[140px]">Account:</span>
+							<span class="min-w-[140px] font-semibold">Account:</span>
 							<span class="text-red-700">{account}</span>
 						</div>
 					{/if}
 					{#if errorCode}
 						<div class="flex">
-							<span class="font-semibold min-w-[140px]">Error Code:</span>
+							<span class="min-w-[140px] font-semibold">Error Code:</span>
 							<span class="text-red-700">{errorCode}</span>
 						</div>
 					{/if}
 					{#if errorNumber}
 						<div class="flex">
-							<span class="font-semibold min-w-[140px]">Error Number:</span>
+							<span class="min-w-[140px] font-semibold">Error Number:</span>
 							<span class="text-red-700">{errorNumber}</span>
 						</div>
 					{/if}
-					<div class="flex flex-col mt-3 pt-3 border-t border-red-200">
-						<span class="font-semibold mb-1">Message:</span>
+					<div class="mt-3 flex flex-col border-t border-red-200 pt-3">
+						<span class="mb-1 font-semibold">Message:</span>
 						<span class="text-red-700 italic">{message}</span>
 					</div>
 				</div>
