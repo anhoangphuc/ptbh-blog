@@ -1,7 +1,8 @@
 export const articles = [
 	{
 		title: 'How does Pump.fun create a liquidity pool on Raydium?',
-		description: 'A coding tour explaining how Pump.fun creates a liquidity pool on Raydium in an atomic and automated way.',
+		description:
+			'A coding tour explaining how Pump.fun creates a liquidity pool on Raydium in an atomic and automated way.',
 		slug: 'pumpfun-with-raydium',
 		category: 'blockchain',
 		categoryLabel: 'Blockchain',
@@ -11,7 +12,8 @@ export const articles = [
 	},
 	{
 		title: 'A gentle introduction to Uniswap v3 ticks',
-		description: 'A gentle introduction to Uniswap v3 ticks, help you have a better sense why it is and how does it work.',
+		description:
+			'A gentle introduction to Uniswap v3 ticks, help you have a better sense why it is and how does it work.',
 		slug: 'uniswapv3-tick-easy-way',
 		category: 'blockchain',
 		categoryLabel: 'Blockchain',
@@ -21,7 +23,8 @@ export const articles = [
 	},
 	{
 		title: 'Understanding Impermanent Loss in AMM',
-		description: 'A comprehensive guide to understanding impermanent loss in automated market makers and how it affects liquidity providers.',
+		description:
+			'A comprehensive guide to understanding impermanent loss in automated market makers and how it affects liquidity providers.',
 		slug: 'impermanent-loss',
 		category: 'blockchain',
 		categoryLabel: 'Blockchain',

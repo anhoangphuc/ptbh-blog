@@ -1,5 +1,5 @@
 export function load() {
-    const accountDetailCode = `
+	const accountDetailCode = `
 pub struct Account {
     /// lamports in the account
     pub lamports: u64,
@@ -13,16 +13,16 @@ pub struct Account {
     /// the epoch at which this account will next owe rent
     pub rent_epoch: Epoch,
 }
-    `
+    `;
 
-    const prerequisitesCode = `# Prerequisites 
+	const prerequisitesCode = `# Prerequisites 
 #  Anchor v0.31.1
 #  Node v0.22.15
 #  Rustc ≥ 1.79.0
 #. Solana 2.3.0
-anchor init pumpfun-integrate-raydium`
+anchor init pumpfun-integrate-raydium`;
 
-    const createTokenCode = `use anchor_lang::{prelude::*, solana_program::native_token::LAMPORTS_PER_SOL};
+	const createTokenCode = `use anchor_lang::{prelude::*, solana_program::native_token::LAMPORTS_PER_SOL};
 use anchor_spl::{
     associated_token::AssociatedToken,
     token::{self, Mint, SyncNative, Token, TokenAccount, sync_native},
@@ -127,15 +127,15 @@ pub fn handler(ctx: Context<CreateToken>) -> Result<()> {
 
     Ok(())
 }
-`
+`;
 
-const addCPMMCargoCode = `[dependencies]
+	const addCPMMCargoCode = `[dependencies]
 raydium-cp-swap = { git = "https://github.com/raydium-io/raydium-cp-swap", features = [
     "no-entrypoint",
     "cpi",
-] }`
+] }`;
 
-const migrateRaydiumCode = `use anchor_lang::{prelude::*, solana_program::native_token::LAMPORTS_PER_SOL};
+	const migrateRaydiumCode = `use anchor_lang::{prelude::*, solana_program::native_token::LAMPORTS_PER_SOL};
 
 use anchor_spl::{
     associated_token::AssociatedToken,
@@ -386,8 +386,8 @@ pub fn handler(ctx: Context<MigrateToken>) -> Result<()> {
 
     Ok(())
 }
-`
-    const shortenInitializeCode = `#[derive(Accounts)]
+`;
+	const shortenInitializeCode = `#[derive(Accounts)]
 pub struct Initialize<'info> {
     /// Address paying to create the pool. Can be anyone
     #[account(mut)]
@@ -412,9 +412,9 @@ pub struct Initialize<'info> {
 
     .....................................................
 }
-`
-    
-    const fixErrorCode = `
+`;
+
+	const fixErrorCode = `
 #[derive(Accounts)]
 pub struct CreateToken<'info> {
     .....................................................
@@ -426,15 +426,14 @@ pub struct CreateToken<'info> {
     pub vault: SystemAccount<'info>,
     .....................................................
 }
-`
+`;
 	return {
-        accountDetailCode,
-        prerequisitesCode,
-        createTokenCode,
-        addCPMMCargoCode,
-        migrateRaydiumCode,
-        shortenInitializeCode,
-        fixErrorCode,
+		accountDetailCode,
+		prerequisitesCode,
+		createTokenCode,
+		addCPMMCargoCode,
+		migrateRaydiumCode,
+		shortenInitializeCode,
+		fixErrorCode
 	};
 }
-
