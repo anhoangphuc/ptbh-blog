@@ -37,48 +37,86 @@
 </script>
 
 <footer
-	class="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white/80 py-6 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-950/80"
+	class="fixed right-0 bottom-0 left-0 z-50 border-t-2 border-purple-400 bg-purple-100/95 backdrop-blur-sm dark:border-purple-600 dark:bg-purple-950/95"
 >
-	<div class="container mx-auto flex items-center justify-between px-4">
-		<!-- Left: Back Navigation -->
-		<div class="flex-1">
-			{#if !isRootRoute}
-				<a
-					href={parentPath()}
-					class="inline-flex items-center gap-2 text-sm text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-				>
-					<svg
-						class="h-4 w-4"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-						xmlns="http://www.w3.org/2000/svg"
+	<div class="container mx-auto px-4 py-2">
+		<!-- Top Row: Back Nav | Quick Links | Social -->
+		<div class="flex items-center justify-between">
+			<!-- Left: Back Navigation -->
+			<div class="flex-1">
+				{#if !isRootRoute}
+					<a
+						href={parentPath()}
+						class="inline-flex items-center gap-1.5 text-sm font-medium text-purple-700 transition-colors hover:text-purple-900 dark:text-purple-300 dark:hover:text-purple-100"
 					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M10 19l-7-7m0 0l7-7m-7 7h18"
-						/>
-					</svg>
-					Back
+						<svg
+							class="h-4 w-4"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M10 19l-7-7m0 0l7-7m-7 7h18"
+							/>
+						</svg>
+						Back
+					</a>
+				{/if}
+			</div>
+
+			<!-- Center: Quick Navigation Links -->
+			<nav class="flex items-center gap-4">
+				<a
+					href="/"
+					class="text-sm font-semibold text-purple-700 transition-colors hover:text-purple-900 dark:text-purple-300 dark:hover:text-purple-100"
+				>
+					Home
 				</a>
-			{/if}
+				<a
+					href="/articles"
+					class="text-sm font-semibold text-purple-700 transition-colors hover:text-purple-900 dark:text-purple-300 dark:hover:text-purple-100"
+				>
+					Articles
+				</a>
+				<a
+					href="/tools"
+					class="text-sm font-semibold text-purple-700 transition-colors hover:text-purple-900 dark:text-purple-300 dark:hover:text-purple-100"
+				>
+					Tools
+				</a>
+				<a
+					href="/about"
+					class="text-sm font-semibold text-purple-700 transition-colors hover:text-purple-900 dark:text-purple-300 dark:hover:text-purple-100"
+				>
+					About me
+				</a>
+			</nav>
+
+			<!-- Right: Social Links -->
+			<div class="flex flex-1 items-center justify-end gap-3">
+				{#each socialLinks as social}
+					<a
+						href={social.url}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="text-purple-700 transition-all hover:scale-110 hover:text-purple-900 dark:text-purple-300 dark:hover:text-purple-100"
+						aria-label={social.name}
+					>
+						{@html social.icon}
+					</a>
+				{/each}
+			</div>
 		</div>
 
-		<!-- Right: Social Links -->
-		<div class="flex items-center gap-4">
-			{#each socialLinks as social}
-				<a
-					href={social.url}
-					target="_blank"
-					rel="noopener noreferrer"
-					class="text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-					aria-label={social.name}
-				>
-					{@html social.icon}
-				</a>
-			{/each}
+		<!-- Bottom Row: Copyright -->
+		<div class="mt-1.5 border-t border-purple-300 pt-1.5 text-center dark:border-purple-700">
+			<p class="text-xs font-medium text-purple-600 dark:text-purple-400">
+				© {new Date().getFullYear()} Ta Phuc. All rights reserved.
+			</p>
 		</div>
 	</div>
 </footer>
