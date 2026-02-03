@@ -30,33 +30,47 @@
 		},
 		workExperience: [
 			{
+				company: 'Calber Venture',
+				position: 'Senior Blockchain Engineer',
+				location: 'Ha Noi, Vietnam; Remote',
+				period: 'January 2025 - Present',
+				description:
+					'Developed and maintained non-custodial BTC solutions for swapping and lending.',
+				achievements: [
+					'Built cross-chain trading platform connecting Bitcoin with Ethereum and Solana, achieving $5M+ trading volume',
+					'Integrated Morpho protocol to create non-custodial lending market for USDC-collateralized BTC loans',
+					'Integrated Across bridge protocol to enable seamless asset transfers from Bitcoin to BSC, Base, and Polygon'
+				],
+				technologies: ['Anchor', 'Foundry', 'Hardhat', 'Solidity', 'Rust', 'TypeScript']
+			},
+			{
 				company: 'Remitano',
-				logo: '🏢', // Replace with actual logo or icon
-				position: 'Solana Blockchain Enginner',
+				logo: '🏢',
+				position: 'Solana Blockchain Engineer',
 				location: 'Remote',
 				period: 'May 2024 - January 2025',
-				description: 'Developed a secured lending-platform on Renec and Solana blockchain',
+				description: 'Developed secure lending platform on Renec and Solana blockchains.',
 				achievements: [
-					'Developed and maintained smart contract for RenecLend, a lending platform with total $5M TVL across Solana and Renec blockchain',
-					'Engineered an NFT management system, suport massive airdrop using Market Root validation, recduced costs by 2 SOL per each 1000 users',
-					'Developing a backend infrastructure for Solana blockchain integration, implementing HTTP endpoints for smartcontract interaction, data retrievel'
+					'Developed and maintained RenecLend smart contracts, achieving $5M total value locked across Solana and Renec',
+					'Engineered NFT management system with Merkle Root validation for mass airdrops, reducing costs by 2 SOL per 1,000 users',
+					'Built backend infrastructure for Solana integration with HTTP endpoints for smart contract interaction and data retrieval'
 				],
-				technologies: ['Anchor', 'Rust', 'NodeJs', 'PostgreSQL', 'TypeScript', 'Svelte']
+				technologies: ['Anchor', 'Rust', 'Node.js', 'PostgreSQL', 'TypeScript', 'Svelte']
 			},
 			{
 				company: 'Sotatek',
 				logo: '🚀',
 				position: 'Lead Blockchain Engineer',
-				location: 'HaNoi, VietNam',
-				period: 'June 2021 - Apr 2024',
+				location: 'Ha Noi, Vietnam',
+				period: 'June 2021 - April 2024',
 				description:
-					'Developed gas-optimized smart contracts and blockchain infrastructure for multiple DeFi and NFT projects.',
+					'Led blockchain development for DeFi and NFT projects, managing teams and architecting scalable solutions.',
 				achievements: [
-					'Developed gas-optimized smart contracts for mystery box, NFT minting, and battle logic for Buni, a top 10 active project on BSC network. Implemented bridge infrastructure to synchronize on-chain and off-chain data',
-					'Led a team to develop an NFT marketplace and NFT fragment ecosystem using Diamond pattern to avoid contract size limits. Implemented signature-based order management system to reduce transaction fees',
-					'Developed scalable blockchain crawl and index service for Metaverse Starter launchpad, automating user rank calculations through staking history analysis',
-					'Spearheaded complete protocol redesign of Wombat Exchange, transforming stable AMM architecture for Solana blockchain compatibility',
-					'Engineered web-based ERP solution for manufacturing operations, enabling real-time order management and worker status monitoring'
+					'Developed gas-optimized smart contracts for Buni (top 10 BSC project), including NFT minting, mystery boxes, and battle logic with on/off-chain bridge infrastructure',
+					'Led team building NFT marketplace using Diamond pattern to bypass contract size limits, implementing signature-based orders to minimize transaction fees',
+					'Built scalable blockchain indexer for Metaverse Starter launchpad with automated user ranking based on staking history',
+					'Redesigned Wombat Exchange protocol for Solana compatibility, transforming stable swap AMM architecture',
+					'Engineered web-based ERP system for manufacturing with real-time order management and worker tracking'
 				],
 				technologies: [
 					'Solidity',
@@ -75,13 +89,13 @@
 				logo: '💡',
 				position: 'Data Engineer',
 				location: 'Ha Noi, Vietnam',
-				period: 'Dec 2019 - May 2021',
+				period: 'December 2019 - May 2021',
 				description:
-					'Optimized data architecture and ETL workflows for enterprise-level data processing and analytics.',
+					'Optimized enterprise data architecture and ETL workflows for large-scale analytics.',
 				achievements: [
-					'Optimized data architecture and ETL workflows, improving Appsflyer reporting performance 6x faster (from 60 minutes to 10 minutes)',
-					'Developed data pipeline architecture, implementing efficient ETL processes for business analytics',
-					'Designed and implemented department-wide messaging system, enabling automated notifications for internal services across SMS, email, and Telegram channels'
+					'Optimized ETL workflows and data architecture, improving Appsflyer reporting performance 6x (60 to 10 minutes)',
+					'Built data pipeline architecture with efficient ETL processes for enterprise business analytics',
+					'Designed department-wide messaging system with automated notifications across SMS, email, and Telegram'
 				],
 				technologies: ['Python', 'Scala', 'Oracle', 'PostgreSQL', 'Spark', 'Hadoop']
 			}
