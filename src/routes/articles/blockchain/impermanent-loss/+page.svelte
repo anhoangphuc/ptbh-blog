@@ -948,11 +948,5 @@
 			</section>
 		</div>
 
-		<!-- Footer -->
-		<footer class="article-footer">
-			<div class="article-footer-content">
-				<a href="/articles/blockchain" class="article-back-link">← Back to Blockchain Articles</a>
-			</div>
-		</footer>
 	</div>
 </article>
