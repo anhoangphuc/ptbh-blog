@@ -18,20 +18,20 @@
 			linkedin: 'www.linkedin.com/in/ta-phuc-437a12185/',
 			github: 'github.com/anhoangphuc',
 			summary:
-				'Software engineer with 7 years of experience, specializing in blockchain development for the past 5 years' +
-				' proven expertise in smart contract development, blockchain architecture and backend services across multiple projects on EVM-based chains and Solana' +
-				', delivering secure and scalable decentralized solutions.'
+				'Software engineer with 7 years of experience, specializing in blockchain development for the past 5 years. ' +
+				'Proven expertise in smart contract development, blockchain architecture, and backend services across multiple projects on EVM-based chains and Solana, ' +
+				'delivering secure and scalable decentralized solutions.'
 		},
 		careerHighlights: [
-			'7 years in software development with focus on high-performance and security-critical systems across blockchain and enterprise applications',
-			'3+ years of technical leadership experience, managing cross-functional teams of 3-6 developers to deliver production blockchain solutions',
-			'5+ years architecting and deploying production-grade smart contract systems on EVM-based chains and Solana using Solidity and Rust',
-			'4+ years as backend engineer specializing in blockchain indexers and integration services, with deep expertise in TypeScript and distributed systems'
+			'7 years of software development experience with a focus on high-performance and security-critical systems across blockchain and enterprise applications',
+			'3+ years of technical leadership, managing cross-functional teams of 3-6 developers to deliver production-grade blockchain solutions',
+			'5+ years of architecting and deploying smart contract systems on EVM-based chains and Solana using Solidity and Rust',
+			'4+ years as a backend engineer specializing in blockchain indexers and integration services, with deep expertise in TypeScript and distributed systems'
 		],
 		techStack: {
 			blockchain: ['EVM-based chain', 'Solana', 'Bitcoin', 'Hardhat', 'Foundry', 'Anchor'],
 			languages: ['JavaScript', 'TypeScript', 'Solidity', 'Rust', 'Python'],
-			backend: ['Node.js', 'NestJs', 'Actix', 'Flask', 'Django'],
+			backend: ['Node.js', 'NestJs', 'Actix', 'Flask', 'Django', 'Tauri'],
 			databases: ['PostgreSQL', 'Oracle', 'MongoDB', 'Redis', 'Spark']
 		},
 		workExperience: [
@@ -41,12 +41,12 @@
 				location: 'Ha Noi, Vietnam; Remote',
 				period: 'January 2025 - Present',
 				description:
-					'Developed and maintained non-custodial BTC solutions for swapping and lending.',
+					'Developing and maintaining non-custodial Bitcoin solutions for decentralized swapping and lending.',
 				achievements: [
 					[
 						'Built cross-chain ',
 						{ text: 'trading platform', url: 'https://app.optimex.com/' },
-						' connecting Bitcoin with Ethereum and Solana',
+						' connecting Bitcoin with Ethereum and Solana,',
 						' achieving $5M+ trading volume'
 					],
 					[
@@ -64,14 +64,14 @@
 				position: 'Solana Blockchain Engineer',
 				location: 'Remote',
 				period: 'May 2024 - January 2025',
-				description: 'Developed secure lending platform on Renec and Solana blockchains.',
+				description: 'Developed secure lending platforms on Renec and Solana blockchains with backend infrastructure support.',
 				achievements: [
 					[
 						'Developed and maintained ',
 						{ text: 'RenecLend', url: 'https://lend.renec.org/home' },
 						' smart contracts, achieving $5M total value locked across Solana and Renec'
 					],
-					'Engineered NFT management system with Merkle Root validation for mass airdrops, reducing costs by 2 SOL per 1,000 users',
+					'Engineered NFT-based voucher management system for creating, distributing, and revoking digital vouchers on the lending platform',
 					'Built backend infrastructure for Solana integration with HTTP endpoints for smart contract interaction and data retrieval',
 					[
 						'Built a high-performance ',
@@ -79,7 +79,7 @@
 							text: 'Jupiter trading bot',
 							url: 'https://github.com/PTBH-personal-project/jupiter-bot'
 						},
-						' for stop limit trading'
+						' for automated stop-limit order execution'
 					]
 				] as Achievement[],
 				technologies: ['Anchor', 'Rust', 'Node.js', 'PostgreSQL', 'TypeScript', 'Svelte']
@@ -93,9 +93,9 @@
 				description:
 					'Led blockchain development for DeFi and NFT projects, managing teams and architecting scalable solutions.',
 				achievements: [
-					'Developed gas-optimized smart contracts for Buni (top 10 BSC project), including NFT minting, mystery boxes, and battle logic with on/off-chain bridge infrastructure',
-					'Led team building NFT marketplace using Diamond pattern to bypass contract size limits, implementing signature-based orders to minimize transaction fees',
-					'Built scalable blockchain indexer for Metaverse Starter launchpad with automated user ranking based on staking history',
+					'Developed gas-optimized smart contracts for Buni (top 10 BSC project), including NFT minting, mystery boxes, and battle logic, with on-chain/off-chain bridge infrastructure',
+					'Led team in building NFT marketplace using Diamond pattern to bypass contract size limits, implementing signature-based orders to minimize transaction fees',
+					'Built scalable blockchain indexer for Metaverse Starter launchpad with automated user ranking system based on staking history',
 					'Redesigned Wombat Exchange protocol for Solana compatibility, transforming stable swap AMM architecture',
 					'Engineered web-based ERP system for manufacturing with real-time order management and worker tracking'
 				] as Achievement[],
@@ -120,11 +120,39 @@
 				description:
 					'Optimized enterprise data architecture and ETL workflows for large-scale analytics.',
 				achievements: [
-					'Optimized ETL workflows and data architecture, improving Appsflyer reporting performance 6x (60 to 10 minutes)',
-					'Built data pipeline architecture with efficient ETL processes for enterprise business analytics',
-					'Designed department-wide messaging system with automated notifications across SMS, email, and Telegram'
+					'Optimized ETL workflows and data architecture, improving Appsflyer reporting performance 6x (from 60 to 10 minutes)',
+					'Built data pipeline architecture with efficient ETL processes for enterprise-level business analytics',
+					'Designed and implemented department-wide messaging system with automated notifications across SMS, email, and Telegram channels'
 				] as Achievement[],
 				technologies: ['Python', 'Scala', 'Oracle', 'PostgreSQL', 'Spark', 'Hadoop']
+			}
+		],
+		education: {
+			school: "People's Security Academy",
+			location: 'Hanoi, Vietnam',
+			period: 'September 2015 - August 2019',
+			degree: "Bachelor's degree in Information Technology - Graduated with Honors"
+		},
+		certificates: [
+			{
+				name: 'Viettel Money Award',
+				description: "First Place at Viettel Money's Coding Competition",
+				date: 'February 2021'
+			},
+			{
+				name: 'Vietnam National Olympiad for High School Students',
+				description: 'Third Prize',
+				date: '2013, 2014'
+			},
+			{
+				name: 'Vietnam Regional Contest ACM',
+				description: 'Third Prize',
+				date: '2018, 2019'
+			},
+			{
+				name: 'TOEIC Certificate (IIG Vietnam)',
+				description: 'Score: 700/990',
+				date: '2017'
 			}
 		]
 	};
@@ -301,6 +329,41 @@
 						</div>
 					</div>
 				{/each}
+			</div>
+		</section>
+
+		<!-- Education Section -->
+		<section class="cv-section">
+			<h2 class="cv-section-title">🎓 Education</h2>
+			<div class="cv-section-content">
+				<div class="education-item">
+					<div class="education-header">
+						<h3 class="education-school">{cv.education.school}</h3>
+						<div class="education-meta">
+							<span>📍 {cv.education.location}</span>
+							<span class="separator">•</span>
+							<span>📅 {cv.education.period}</span>
+						</div>
+					</div>
+					<p class="education-degree">{cv.education.degree}</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- Certificates and Awards Section -->
+		<section class="cv-section">
+			<h2 class="cv-section-title">🏆 Certificates and Awards</h2>
+			<div class="cv-section-content">
+				<ul class="cv-list">
+					{#each cv.certificates as cert}
+						<li class="cv-list-item">
+							<span class="bullet">•</span>
+							<span>
+								<strong>{cert.name}</strong>: {cert.description}. {cert.date}.
+							</span>
+						</li>
+					{/each}
+				</ul>
 			</div>
 		</section>
 	</div>
@@ -696,6 +759,69 @@
 
 	:global(.dark) .tech-items {
 		color: #94a3b8;
+	}
+
+	/* Education */
+	.education-item {
+		padding: 1.5rem;
+		background: linear-gradient(135deg, #faf5ff, #f5f3ff);
+		border: 2px solid rgb(233, 213, 255);
+		border-radius: 0.5rem;
+		transition:
+			border-color 0.3s,
+			box-shadow 0.3s;
+	}
+
+	.education-item:hover {
+		border-color: rgb(216, 180, 254);
+		box-shadow: 0 4px 12px rgba(126, 34, 206, 0.15);
+	}
+
+	:global(.dark) .education-item {
+		background: linear-gradient(135deg, #1e1b4b, #1e293b);
+		border-color: rgb(88, 28, 135);
+	}
+
+	:global(.dark) .education-item:hover {
+		border-color: rgb(126, 34, 206);
+		box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
+	}
+
+	.education-header {
+		margin-bottom: 1rem;
+	}
+
+	.education-school {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: rgb(109, 40, 217);
+		margin-bottom: 0.5rem;
+	}
+
+	:global(.dark) .education-school {
+		color: rgb(216, 180, 254);
+	}
+
+	.education-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		font-size: 0.875rem;
+		color: #64748b;
+	}
+
+	:global(.dark) .education-meta {
+		color: #94a3b8;
+	}
+
+	.education-degree {
+		font-size: 1rem;
+		line-height: 1.6;
+		color: #475569;
+	}
+
+	:global(.dark) .education-degree {
+		color: #cbd5e1;
 	}
 
 	/* Footer */
