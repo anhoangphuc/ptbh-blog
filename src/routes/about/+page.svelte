@@ -1,6 +1,11 @@
 <script lang="ts">
 	import '$lib/styles/article.css';
 
+	// Type definitions for achievements with links
+	type AchievementLink = { text: string; url: string };
+	type AchievementPart = string | AchievementLink;
+	type Achievement = string | AchievementPart[];
+
 	// CV Data Structure - Replace with your actual information
 	const cv = {
 		introduction: {
@@ -18,15 +23,16 @@
 				', delivering secure and scalable decentralized solutions.'
 		},
 		careerHighlights: [
-			'3+ years of technical leadership experience, managing cross-functional teams of 3-6 developers to deliver blockchain solutions',
-			'Architected and deployed multiple production-grade smart contract systems on EVM-based chains and Solana using Solidity and Rust',
-			'4+ years as a backend engineer specializing in blockchain indexers and integration services, with deep expertise in TypeScript'
+			'7 years in software development with focus on high-performance and security-critical systems across blockchain and enterprise applications',
+			'3+ years of technical leadership experience, managing cross-functional teams of 3-6 developers to deliver production blockchain solutions',
+			'5+ years architecting and deploying production-grade smart contract systems on EVM-based chains and Solana using Solidity and Rust',
+			'4+ years as backend engineer specializing in blockchain indexers and integration services, with deep expertise in TypeScript and distributed systems'
 		],
 		techStack: {
 			blockchain: ['EVM-based chain', 'Solana', 'Bitcoin', 'Hardhat', 'Foundry', 'Anchor'],
 			languages: ['JavaScript', 'TypeScript', 'Solidity', 'Rust', 'Python'],
-			backend: ['Node.js', 'NestJs', 'Actix', 'Django', 'Redis'],
-			databases: ['PostgreSQL', 'MongoDB', 'Redis']
+			backend: ['Node.js', 'NestJs', 'Actix', 'Flask', 'Django'],
+			databases: ['PostgreSQL', 'Oracle', 'MongoDB', 'Redis', 'Spark']
 		},
 		workExperience: [
 			{
@@ -37,10 +43,19 @@
 				description:
 					'Developed and maintained non-custodial BTC solutions for swapping and lending.',
 				achievements: [
-					'Built cross-chain trading platform connecting Bitcoin with Ethereum and Solana, achieving $5M+ trading volume',
-					'Integrated Morpho protocol to create non-custodial lending market for USDC-collateralized BTC loans',
+					[
+						'Built cross-chain ',
+						{ text: 'trading platform', url: 'https://app.optimex.com/' },
+						' connecting Bitcoin with Ethereum and Solana',
+						' achieving $5M+ trading volume'
+					],
+					[
+						'Integrated Morpho protocol to create non-custodial ',
+						{ text: 'lending market', url: 'https://app-lending.optimex.com/' },
+						' for USDC-collateralized BTC loans'
+					],
 					'Integrated Across bridge protocol to enable seamless asset transfers from Bitcoin to BSC, Base, and Polygon'
-				],
+				] as Achievement[],
 				technologies: ['Anchor', 'Foundry', 'Hardhat', 'Solidity', 'Rust', 'TypeScript']
 			},
 			{
@@ -51,10 +66,22 @@
 				period: 'May 2024 - January 2025',
 				description: 'Developed secure lending platform on Renec and Solana blockchains.',
 				achievements: [
-					'Developed and maintained RenecLend smart contracts, achieving $5M total value locked across Solana and Renec',
+					[
+						'Developed and maintained ',
+						{ text: 'RenecLend', url: 'https://lend.renec.org/home' },
+						' smart contracts, achieving $5M total value locked across Solana and Renec'
+					],
 					'Engineered NFT management system with Merkle Root validation for mass airdrops, reducing costs by 2 SOL per 1,000 users',
-					'Built backend infrastructure for Solana integration with HTTP endpoints for smart contract interaction and data retrieval'
-				],
+					'Built backend infrastructure for Solana integration with HTTP endpoints for smart contract interaction and data retrieval',
+					[
+						'Built a high-performance ',
+						{
+							text: 'Jupiter trading bot',
+							url: 'https://github.com/PTBH-personal-project/jupiter-bot'
+						},
+						' for stop limit trading'
+					]
+				] as Achievement[],
 				technologies: ['Anchor', 'Rust', 'Node.js', 'PostgreSQL', 'TypeScript', 'Svelte']
 			},
 			{
@@ -71,7 +98,7 @@
 					'Built scalable blockchain indexer for Metaverse Starter launchpad with automated user ranking based on staking history',
 					'Redesigned Wombat Exchange protocol for Solana compatibility, transforming stable swap AMM architecture',
 					'Engineered web-based ERP system for manufacturing with real-time order management and worker tracking'
-				],
+				] as Achievement[],
 				technologies: [
 					'Solidity',
 					'Rust',
@@ -96,7 +123,7 @@
 					'Optimized ETL workflows and data architecture, improving Appsflyer reporting performance 6x (60 to 10 minutes)',
 					'Built data pipeline architecture with efficient ETL processes for enterprise business analytics',
 					'Designed department-wide messaging system with automated notifications across SMS, email, and Telegram'
-				],
+				] as Achievement[],
 				technologies: ['Python', 'Scala', 'Oracle', 'PostgreSQL', 'Spark', 'Hadoop']
 			}
 		]
@@ -242,7 +269,26 @@
 								{#each job.achievements as achievement}
 									<li class="cv-list-item">
 										<span class="bullet">•</span>
-										<span>{achievement}</span>
+										<span>
+											{#if typeof achievement === 'string'}
+												{achievement}
+											{:else if Array.isArray(achievement)}
+												{#each achievement as part}
+													{#if typeof part === 'string'}
+														{part}
+													{:else}
+														<a
+															href={part.url}
+															target="_blank"
+															rel="noopener noreferrer"
+															class="achievement-link"
+														>
+															{part.text}
+														</a>
+													{/if}
+												{/each}
+											{/if}
+										</span>
 									</li>
 								{/each}
 							</ul>
@@ -602,6 +648,26 @@
 
 	.work-achievements {
 		margin-bottom: 1rem;
+	}
+
+	.achievement-link {
+		color: rgb(126, 34, 206);
+		text-decoration: none;
+		font-weight: 600;
+		border-bottom: 1px solid transparent;
+		transition: border-bottom-color 0.2s;
+	}
+
+	.achievement-link:hover {
+		border-bottom-color: rgb(126, 34, 206);
+	}
+
+	:global(.dark) .achievement-link {
+		color: rgb(216, 180, 254);
+	}
+
+	:global(.dark) .achievement-link:hover {
+		border-bottom-color: rgb(216, 180, 254);
 	}
 
 	.work-technologies {
