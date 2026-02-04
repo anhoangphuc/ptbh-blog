@@ -36,7 +36,7 @@
 		},
 		workExperience: [
 			{
-				company: 'Calber Venture',
+				company: 'Caliber Venture',
 				position: 'Senior Blockchain Engineer',
 				location: 'Ha Noi, Vietnam; Remote',
 				period: 'January 2025 - Present',
