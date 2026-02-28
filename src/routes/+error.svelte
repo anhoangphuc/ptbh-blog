@@ -12,14 +12,33 @@
 		<div class="error-page">
 			<!-- 404 Illustration -->
 			<div class="error-illustration">
-				<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<svg
+					width="200"
+					height="200"
+					viewBox="0 0 200 200"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+				>
 					<!-- 404 Text -->
-					<text x="100" y="120" text-anchor="middle" style="font-family: 'Playfair Display', serif; font-size: 72px; font-weight: 700; fill: rgb(126, 34, 206); opacity: 0.2;">
+					<text
+						x="100"
+						y="120"
+						text-anchor="middle"
+						style="font-family: 'Playfair Display', serif; font-size: 72px; font-weight: 700; fill: rgb(126, 34, 206); opacity: 0.2;"
+					>
 						404
 					</text>
 					<!-- Magnifying Glass -->
 					<circle cx="80" cy="80" r="30" stroke="rgb(126, 34, 206)" stroke-width="4" fill="none" />
-					<line x1="102" y1="102" x2="130" y2="130" stroke="rgb(126, 34, 206)" stroke-width="4" stroke-linecap="round" />
+					<line
+						x1="102"
+						y1="102"
+						x2="130"
+						y2="130"
+						stroke="rgb(126, 34, 206)"
+						stroke-width="4"
+						stroke-linecap="round"
+					/>
 				</svg>
 			</div>
 
@@ -27,7 +46,8 @@
 			<div class="error-content">
 				<h1 class="error-title">Oops! Page Not Found</h1>
 				<p class="error-message">
-					The page you're looking for doesn't exist yet. It might be under construction, or perhaps you've stumbled upon a path less traveled.
+					The page you're looking for doesn't exist yet. It might be under construction, or perhaps
+					you've stumbled upon a path less traveled.
 				</p>
 
 				<!-- Status Code Badge -->
@@ -40,9 +60,27 @@
 				<!-- Navigation Options -->
 				<div class="error-actions">
 					<a href="/" class="error-button error-button-primary">
-						<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path d="M2 8L8 2L14 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-							<path d="M3 7V14H7V10H9V14H13V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						<svg
+							width="16"
+							height="16"
+							viewBox="0 0 16 16"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M2 8L8 2L14 8"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+							<path
+								d="M3 7V14H7V10H9V14H13V7"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
 						</svg>
 						Go Home
 					</a>
@@ -53,8 +91,12 @@
 
 				<!-- Helpful Message -->
 				<div class="error-help">
-					<p class="article-text" style="text-align: center; color: rgb(100, 116, 139); font-size: 0.875rem;">
-						Looking for something specific? Try starting from the home page or check out the latest blockchain articles.
+					<p
+						class="article-text"
+						style="text-align: center; color: rgb(100, 116, 139); font-size: 0.875rem;"
+					>
+						Looking for something specific? Try starting from the home page or check out the latest
+						blockchain articles.
 					</p>
 				</div>
 			</div>
@@ -79,7 +121,8 @@
 	}
 
 	@keyframes float {
-		0%, 100% {
+		0%,
+		100% {
 			transform: translateY(0px);
 		}
 		50% {
@@ -150,7 +193,9 @@
 
 	.error-button-primary:hover {
 		background-color: rgb(107, 33, 168);
-		box-shadow: 0 4px 6px -1px rgba(126, 34, 206, 0.3), 0 2px 4px -1px rgba(126, 34, 206, 0.2);
+		box-shadow:
+			0 4px 6px -1px rgba(126, 34, 206, 0.3),
+			0 2px 4px -1px rgba(126, 34, 206, 0.2);
 		transform: translateY(-1px);
 	}
 

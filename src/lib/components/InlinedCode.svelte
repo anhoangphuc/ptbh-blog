@@ -2,8 +2,9 @@
 	let {
 		variable,
 		color = 'gray',
-		strong = false
-	}: { variable: string; color?: string; strong?: boolean } = $props();
+		strong = false,
+		href = undefined
+	}: { variable: string; color?: string; strong?: boolean; href?: string } = $props();
 
 	// Map color names to complete Tailwind classes
 	const colorClasses = $derived.by(() => {
@@ -29,10 +30,21 @@
 	});
 </script>
 
-{#if strong}
-	<strong>
-		<code class="rounded px-2 py-1 text-sm {colorClasses}">{variable}</code>
-	</strong>
-{:else}
+{#snippet codeEl()}
 	<code class="rounded px-2 py-1 text-sm {colorClasses}">{variable}</code>
+{/snippet}
+
+{#if href}
+	{#if strong}
+		<strong
+			><a {href} class="underline" target="_blank" rel="noopener noreferrer">{@render codeEl()}</a
+			></strong
+		>
+	{:else}
+		<a {href} class="underline" target="_blank" rel="noopener noreferrer">{@render codeEl()}</a>
+	{/if}
+{:else if strong}
+	<strong>{@render codeEl()}</strong>
+{:else}
+	{@render codeEl()}
 {/if}

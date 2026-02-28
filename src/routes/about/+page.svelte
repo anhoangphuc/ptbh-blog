@@ -64,7 +64,8 @@
 				position: 'Solana Blockchain Engineer',
 				location: 'Remote',
 				period: 'May 2024 - January 2025',
-				description: 'Developed secure lending platforms on Renec and Solana blockchains with backend infrastructure support.',
+				description:
+					'Developed secure lending platforms on Renec and Solana blockchains with backend infrastructure support.',
 				achievements: [
 					[
 						'Developed and maintained ',

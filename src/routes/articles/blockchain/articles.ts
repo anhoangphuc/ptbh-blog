@@ -29,8 +29,19 @@ export const articles = [
 		category: 'blockchain',
 		categoryLabel: 'Blockchain',
 		date: '2026-02-02',
-		readTime: '15 min read',
+		readTime: '20 min read',
 		tags: ['DeFi', 'AMM', 'Uniswap', 'Liquidity']
+	},
+	{
+		title: 'How a Collateralized Stablecoin Works: A Code Walkthrough',
+		description:
+			'MakerDAO is complex. This article walks through a simplified implementation to explain how collateralized stablecoins work — deposit, borrow, repay, withdraw, and liquidate.',
+		slug: 'dai-simple',
+		category: 'blockchain',
+		categoryLabel: 'Blockchain',
+		date: '2026-02-28',
+		readTime: '10 min read',
+		tags: ['Ethereum', 'DeFi', 'MakerDAO', 'Solidity']
 	}
 	// Add more blockchain articles here as you create them
 ];
